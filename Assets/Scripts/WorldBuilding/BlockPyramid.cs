@@ -8,7 +8,7 @@ public class BlockPyramid : Block {
     public BlockPyramid()
          : base()
      {
-        blockColor = Color.red;
+		blockColor = Random.ColorHSV();
     }
 
     // Use this for initialization
@@ -21,10 +21,30 @@ public class BlockPyramid : Block {
 		
 	}
 
+	public override MeshData Blockdata
+	(Chunk chunk, int x, int y, int z, MeshData meshData)
+	{
+
+		meshData.useRenderDataForCol = true;
+
+
+			meshData = FaceDataUp(chunk, x, y, z, meshData);
+
+
+		if (!chunk.GetBlock(x, y - 1, z).IsSolid(Direction.up))
+		{
+			meshData = FaceDataDown(chunk, x, y, z, meshData);
+		}
+
+
+
+		return meshData;
+	}
+
     protected override MeshData FaceDataUp
       (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
-
+		
         meshData.AddVertex(new Vector3(x, y + 0.5f, z), blockColor);
         meshData.AddTriangle(meshData.vertices.Count - 1);
         
@@ -115,31 +135,32 @@ public class BlockPyramid : Block {
     /// <returns></returns>
     public override bool IsSolid(Direction direction)
     {
-        /*
         switch (direction)
         {
-            case Direction.north:
-                return false;
+		case Direction.north:
+			Debug.Log ("Return false on north");
+			 return false;
             case Direction.east:
+			Debug.Log ("Return false on east");
                 return false;
             case Direction.south:
+			Debug.Log ("Return false on south");
                 return false;
             case Direction.west:
+			Debug.Log ("Return false on west");
                 return false;
             case Direction.up:
+			Debug.Log ("Return false on up");
                 return false;
             case Direction.down:
+			Debug.Log ("Return true on down");
                 return true;
+		default:
+			return false;
         }
-        */
-        if(direction == Direction.down)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+
+		//Debug.Log ("worst fuckup ever");
+		//return true;
     }
 
 

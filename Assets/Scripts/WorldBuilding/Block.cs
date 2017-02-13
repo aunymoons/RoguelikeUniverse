@@ -194,8 +194,10 @@ public class Block
                 return true;
             case Direction.down:
                 return true;
+		default:
+			return false;
         }
-        return false;
+        //return false;
     }
 
     ///TEXTURING -----------------------------------------
