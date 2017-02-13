@@ -42,7 +42,7 @@ public class BlockPyramid : Block {
         meshData.AddVertex(new Vector3(x - 0.5f, y - 0.5f, z - 0.5f), blockColor);
         meshData.AddTriangle(meshData.vertices.Count - 1);
 
-        meshData.uv.AddRange(FaceUVs(Direction.up));
+        meshData.uv.AddRange(FaceUVs(Direction.up)); 
 
         meshData.AddVertex(new Vector3(x, y + 0.5f, z), blockColor);
         meshData.AddTriangle(meshData.vertices.Count - 1);
