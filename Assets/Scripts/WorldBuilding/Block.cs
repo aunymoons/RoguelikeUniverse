@@ -16,6 +16,8 @@ public class Block
 
     public Color blockColor = Color.white;
 
+    public Vector3 blockPosition;
+    
     ///TEXTURING 
     
     //Struct for tile positioning
@@ -48,8 +50,36 @@ public class Block
 
         meshData.useRenderDataForCol = true;
 
+        if (!chunk.GetBlock(x, y + 1, z).IsCovered(Direction.down, chunk, x, y + 1, z))
+        {
+            meshData = FaceDataUp(chunk, x, y, z, meshData);
+        }
 
+        if (!chunk.GetBlock(x, y - 1, z).IsCovered(Direction.up, chunk, x, y - 1, z))
+        {
+            meshData = FaceDataDown(chunk, x, y, z, meshData);
+        }
 
+        if (!chunk.GetBlock(x, y, z + 1).IsCovered(Direction.south, chunk, x, y, z + 1))
+        {
+            meshData = FaceDataNorth(chunk, x, y, z, meshData);
+        }
+
+        if (!chunk.GetBlock(x, y, z - 1).IsCovered(Direction.north, chunk, x, y, z - 1))
+        {
+            meshData = FaceDataSouth(chunk, x, y, z, meshData);
+        }
+
+        if (!chunk.GetBlock(x + 1, y, z).IsCovered(Direction.west, chunk, x + 1, y, z))
+        {
+            meshData = FaceDataEast(chunk, x, y, z, meshData);
+        }
+
+        if (!chunk.GetBlock(x - 1, y, z).IsCovered(Direction.east, chunk, x - 1, y, z))
+        {
+            meshData = FaceDataWest(chunk, x, y, z, meshData);
+        }
+        /*
         if (!chunk.GetBlock(x, y + 1, z).IsSolid(Direction.down))
         {
             meshData = FaceDataUp(chunk, x, y, z, meshData);
@@ -78,7 +108,7 @@ public class Block
 		if (!chunk.GetBlock (x - 1, y, z).IsSolid (Direction.east)) {
 			meshData = FaceDataWest (chunk, x, y, z, meshData);
 		}
-
+        */
         return meshData;
     }
 
@@ -184,7 +214,6 @@ public class Block
     /// <returns></returns>
     public virtual bool IsSolid(Direction direction)
     {
-		
 
         switch (direction)
         {
@@ -200,10 +229,29 @@ public class Block
                 return true;
             case Direction.down:
                 return true;
-		default:
-			return false;
+		//default:
+			//return false;
         }
-        //return false;
+        return false;
+    }
+
+    public bool IsCovered(Direction direction, Chunk chunk, int x, int y, int z)
+    {
+        if (
+            chunk.GetBlock(x, y - 1, z).IsSolid(Direction.up) &&
+            chunk.GetBlock(x, y + 1, z).IsSolid(Direction.down) &&
+            chunk.GetBlock(x, y, z - 1).IsSolid(Direction.north) &&
+            chunk.GetBlock(x, y, z + 1).IsSolid(Direction.south) &&
+            chunk.GetBlock(x - 1, y, z).IsSolid(Direction.east) &&
+            chunk.GetBlock(x + 1, y, z).IsSolid(Direction.west)
+        )
+        {
+            return true;
+        }
+        else
+        {
+            return IsSolid(direction);
+        }
     }
 
     ///TEXTURING -----------------------------------------

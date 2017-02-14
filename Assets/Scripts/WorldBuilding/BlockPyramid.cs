@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class BlockPyramid : Block {
 
+    int faceCounter;
+
 
     public BlockPyramid()
          : base()
@@ -27,37 +29,25 @@ public class BlockPyramid : Block {
 
 		meshData.useRenderDataForCol = true;
 
-		if (
-			!chunk.GetBlock(x, y - 1, z).IsSolid(Direction.up) &&
-			!chunk.GetBlock(x, y + 1, z).IsSolid(Direction.down) &&
-			!chunk.GetBlock(x, y, z - 1).IsSolid(Direction.north) &&
-			!chunk.GetBlock(x, y, z + 1).IsSolid(Direction.south) &&
-			!chunk.GetBlock(x - 1, y, z).IsSolid(Direction.east) &&
-			!chunk.GetBlock(x + 1, y, z).IsSolid(Direction.west) 
-		)
-		{
-			covered = true;
-		}
-
-
-
-		if (
-			!chunk.GetBlock(x, y + 1, z).IsSolid(Direction.down) ||
-			!chunk.GetBlock(x, y, z - 1).IsSolid(Direction.north) ||
-			!chunk.GetBlock(x, y, z + 1).IsSolid(Direction.south) ||
-			!chunk.GetBlock(x - 1, y, z).IsSolid(Direction.east) ||
-			!chunk.GetBlock(x + 1, y, z).IsSolid(Direction.west) 
+        
+        if (
+			!chunk.GetBlock(x, y + 1, z).IsCovered(Direction.down, chunk, x, y + 1, z) ||
+			!chunk.GetBlock(x, y, z - 1).IsCovered(Direction.north, chunk, x, y, z - 1) ||
+			!chunk.GetBlock(x, y, z + 1).IsCovered(Direction.south, chunk, x, y, z + 1) ||
+			!chunk.GetBlock(x - 1, y, z).IsCovered(Direction.east, chunk, x - 1, y, z) ||
+			!chunk.GetBlock(x + 1, y, z).IsCovered(Direction.west, chunk, x + 1, y, z) 
 		)
 		{
 			meshData = FaceDataUp(chunk, x, y, z, meshData);
 		}
 
-		if (!chunk.GetBlock(x, y - 1, z).IsSolid(Direction.up))
+		if (!chunk.GetBlock(x, y - 1, z).IsCovered(Direction.up, chunk, x, y - 1, z))
 		{
 			meshData = FaceDataDown(chunk, x, y, z, meshData);
 		}
 
-		return meshData;
+        
+        return meshData;
 	}
 
     protected override MeshData FaceDataUp
@@ -154,12 +144,13 @@ public class BlockPyramid : Block {
     /// <returns></returns>
     public override bool IsSolid(Direction direction)
     {
-		if (covered) {
-			return true;
-			Debug.Log ("TEST working");
+        
+        if (covered) {
+            Debug.Log("is solid covered");
+            return true;
 		} else {
-			
-			switch (direction) {
+            Debug.Log("is solid NOT covered");
+            switch (direction) {
 			case Direction.north:
 				return false;
 			case Direction.east:
@@ -177,8 +168,7 @@ public class BlockPyramid : Block {
 			}
 		}
     }
-
-
+    
     /// <summary>
     /// Gets vectors for the tile position on the UV based on the face direction
     /// </summary>
