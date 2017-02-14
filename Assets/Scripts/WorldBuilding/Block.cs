@@ -24,6 +24,9 @@ public class Block
     //Tile size constant
     public float tileSize = 0.25f;
 
+	//Flags
+	public bool covered;
+
     /// <summary>
     /// The block constructor
     /// </summary>
@@ -44,6 +47,8 @@ public class Block
     {
 
         meshData.useRenderDataForCol = true;
+
+
 
         if (!chunk.GetBlock(x, y + 1, z).IsSolid(Direction.down))
         {
@@ -70,10 +75,9 @@ public class Block
             meshData = FaceDataEast(chunk, x, y, z, meshData);
         }
 
-        if (!chunk.GetBlock(x - 1, y, z).IsSolid(Direction.east))
-        {
-            meshData = FaceDataWest(chunk, x, y, z, meshData);
-        }
+		if (!chunk.GetBlock (x - 1, y, z).IsSolid (Direction.east)) {
+			meshData = FaceDataWest (chunk, x, y, z, meshData);
+		}
 
         return meshData;
     }
@@ -180,6 +184,8 @@ public class Block
     /// <returns></returns>
     public virtual bool IsSolid(Direction direction)
     {
+		
+
         switch (direction)
         {
             case Direction.north:

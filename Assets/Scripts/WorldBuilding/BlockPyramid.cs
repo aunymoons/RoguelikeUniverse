@@ -27,16 +27,35 @@ public class BlockPyramid : Block {
 
 		meshData.useRenderDataForCol = true;
 
+		if (
+			!chunk.GetBlock(x, y - 1, z).IsSolid(Direction.up) &&
+			!chunk.GetBlock(x, y + 1, z).IsSolid(Direction.down) &&
+			!chunk.GetBlock(x, y, z - 1).IsSolid(Direction.north) &&
+			!chunk.GetBlock(x, y, z + 1).IsSolid(Direction.south) &&
+			!chunk.GetBlock(x - 1, y, z).IsSolid(Direction.east) &&
+			!chunk.GetBlock(x + 1, y, z).IsSolid(Direction.west) 
+		)
+		{
+			covered = true;
+		}
 
+
+
+		if (
+			!chunk.GetBlock(x, y + 1, z).IsSolid(Direction.down) ||
+			!chunk.GetBlock(x, y, z - 1).IsSolid(Direction.north) ||
+			!chunk.GetBlock(x, y, z + 1).IsSolid(Direction.south) ||
+			!chunk.GetBlock(x - 1, y, z).IsSolid(Direction.east) ||
+			!chunk.GetBlock(x + 1, y, z).IsSolid(Direction.west) 
+		)
+		{
 			meshData = FaceDataUp(chunk, x, y, z, meshData);
-
+		}
 
 		if (!chunk.GetBlock(x, y - 1, z).IsSolid(Direction.up))
 		{
 			meshData = FaceDataDown(chunk, x, y, z, meshData);
 		}
-
-
 
 		return meshData;
 	}
@@ -135,32 +154,28 @@ public class BlockPyramid : Block {
     /// <returns></returns>
     public override bool IsSolid(Direction direction)
     {
-        switch (direction)
-        {
-		case Direction.north:
-			Debug.Log ("Return false on north");
-			 return false;
-            case Direction.east:
-			Debug.Log ("Return false on east");
-                return false;
-            case Direction.south:
-			Debug.Log ("Return false on south");
-                return false;
-            case Direction.west:
-			Debug.Log ("Return false on west");
-                return false;
-            case Direction.up:
-			Debug.Log ("Return false on up");
-                return false;
-            case Direction.down:
-			Debug.Log ("Return true on down");
-                return true;
-		default:
-			return false;
-        }
-
-		//Debug.Log ("worst fuckup ever");
-		//return true;
+		if (covered) {
+			return true;
+			Debug.Log ("TEST working");
+		} else {
+			
+			switch (direction) {
+			case Direction.north:
+				return false;
+			case Direction.east:
+				return false;
+			case Direction.south:
+				return false;
+			case Direction.west:
+				return false;
+			case Direction.up:
+				return false;
+			case Direction.down:
+				return true;
+			default:
+				return false;
+			}
+		}
     }
 
 

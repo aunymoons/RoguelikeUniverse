@@ -8,7 +8,7 @@ public class PlayerEditor : MonoBehaviour {
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+		if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -19,7 +19,7 @@ public class PlayerEditor : MonoBehaviour {
             }
             
         }
-        if (Input.GetKeyDown(KeyCode.Mouse1))
+        if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -30,6 +30,17 @@ public class PlayerEditor : MonoBehaviour {
             }
 
         }
+		if (Input.GetKeyDown(KeyCode.Alpha3))
+		{
+			RaycastHit hit;
+			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			if (Physics.Raycast(ray, out hit, 100f))
+			{
+				WorldEditor.SetBlock(hit, new BlockEmpty());
+
+			}
+
+		}
 
         /*
         rot = new Vector2(
