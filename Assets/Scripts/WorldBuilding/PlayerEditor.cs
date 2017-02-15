@@ -8,7 +8,7 @@ public class PlayerEditor : MonoBehaviour {
 
     void Update()
     {
-		if (Input.GetKeyDown(KeyCode.Mouse2))
+		if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -19,7 +19,7 @@ public class PlayerEditor : MonoBehaviour {
             }
             
         }
-        if (Input.GetKey(KeyCode.Mouse0))
+        if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -30,7 +30,7 @@ public class PlayerEditor : MonoBehaviour {
             }
 
         }
-		if (Input.GetKey(KeyCode.Mouse1))
+		if (Input.GetKeyDown(KeyCode.Mouse2))
 		{
 			RaycastHit hit;
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);

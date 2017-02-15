@@ -33,8 +33,14 @@ public class MeshData
         
         if (useRenderDataForCol)
         {
-            colVertices.Add(vertex);
+            AddColVertex(vertex);
         }
+    }
+
+    //Adds collider vertex to meshData
+    public void AddColVertex(Vector3 vertex)
+    {
+        colVertices.Add(vertex);
     }
 
     //To be used for non-cubical shapes
@@ -43,8 +49,14 @@ public class MeshData
         triangles.Add(tri);
         if (useRenderDataForCol)
         {
-            colTriangles.Add(tri - (vertices.Count - colVertices.Count));
+            AddColTriangle(tri);
         }
+    }
+
+    //Adds collider triangle to meshData
+    public void AddColTriangle(int tri)
+    {
+        colTriangles.Add(tri - (vertices.Count - colVertices.Count));
     }
     
 
@@ -60,12 +72,17 @@ public class MeshData
         //Collision data
         if (useRenderDataForCol)
         {
-            colTriangles.Add(colVertices.Count - 4);
-            colTriangles.Add(colVertices.Count - 3);
-            colTriangles.Add(colVertices.Count - 2);
-            colTriangles.Add(colVertices.Count - 4);
-            colTriangles.Add(colVertices.Count - 2);
-            colTriangles.Add(colVertices.Count - 1);
+            AddColQuadTriangles();
         }
+    }
+
+    public void AddColQuadTriangles()
+    {
+        colTriangles.Add(colVertices.Count - 4);
+        colTriangles.Add(colVertices.Count - 3);
+        colTriangles.Add(colVertices.Count - 2);
+        colTriangles.Add(colVertices.Count - 4);
+        colTriangles.Add(colVertices.Count - 2);
+        colTriangles.Add(colVertices.Count - 1);
     }
 }

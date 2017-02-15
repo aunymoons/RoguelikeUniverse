@@ -17,7 +17,7 @@ public class BlockEmpty : Block {
     {
         return meshData;
     }
-    public override bool IsSolid(Block.Direction direction)
+    public override bool IsSolid(Block.Direction direction, bool forCollision = false)
     {
         return false;
     }
