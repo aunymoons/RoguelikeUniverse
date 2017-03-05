@@ -8,8 +8,8 @@ using UnityEngine;
 
 public class BlockEmpty : Block {
 
-    public BlockEmpty()
-         : base()
+    public BlockEmpty(Vector3 blockRotation, Color color)
+         : base(blockRotation, color)
      {
     }
     public override MeshData Blockdata

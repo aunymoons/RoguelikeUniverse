@@ -44,7 +44,8 @@ public class World : MonoBehaviour {
         //Instantiate the chunk at the coordinates using the chunk prefab
         GameObject newChunkObject = Instantiate(
                         chunkPrefab, new Vector3(worldPos.x, worldPos.y, worldPos.z),
-                        Quaternion.Euler(Vector3.zero)
+                        Quaternion.Euler(Vector3.zero),
+                        transform
                     ) as GameObject;
 
         //Get the object's chunk component
@@ -66,15 +67,18 @@ public class World : MonoBehaviour {
                 {
                     if (yi <= 0)
                     {
-                        SetBlock(x + xi, y + yi, z + zi, new Block());
+                        SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(0, 0, 0), Color.white));
                     }
                     else
                     {
-                        SetBlock(x + xi, y + yi, z + zi, new BlockEmpty());
+                        SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white));
                     }
                 }
             }
         }
+
+        gameObject.SetActive(false);
+        gameObject.SetActive(true);
     }
 
     public void DestroyChunk(int x, int y, int z)
@@ -115,7 +119,7 @@ public class World : MonoBehaviour {
         }
         else
         {
-            return new BlockEmpty();
+            return new BlockEmpty(new Vector3(0,0,0), Color.white);
         }
 
     }

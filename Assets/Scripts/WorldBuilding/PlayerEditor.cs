@@ -4,28 +4,29 @@ using UnityEngine;
 
 public class PlayerEditor : MonoBehaviour {
 
-    Vector2 rot;
+
+    public BlockCreationController blockCreationController;
 
     void Update()
     {
-		if (Input.GetKeyDown(KeyCode.Mouse1))
+		if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit, 100f))
             {
-                WorldEditor.SetBlock(hit, new BlockPyramid(), true);
+                WorldEditor.SetBlock(hit, new Block(blockCreationController.currentRotation, blockCreationController.currentColor), true);
                 
             }
             
         }
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit, 100f))
             {
-                WorldEditor.SetBlock(hit, new Block(), true);
+                WorldEditor.SetBlock(hit, new BlockEmpty(new Vector3(0, 0, 0), Color.white));
 
             }
 
@@ -36,7 +37,7 @@ public class PlayerEditor : MonoBehaviour {
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray, out hit, 100f))
 			{
-				WorldEditor.SetBlock(hit, new BlockEmpty());
+				WorldEditor.SetBlock(hit, new Block(new Vector3(0, 0, 0), Color.white),true);
 
 			}
 

@@ -8,10 +8,9 @@ public class BlockPyramid : Block
     int faceCounter;
 
 
-    public BlockPyramid()
-         : base()
+    public BlockPyramid(Vector3 blockRotation, Color color)
+         : base(blockRotation, color)
     {
-        blockColor = Random.ColorHSV();
     }
 
     // Use this for initialization
@@ -38,26 +37,15 @@ public class BlockPyramid : Block
         )
         {
             meshData = FaceDataUp(chunk, x, y, z, meshData);
+            //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.up);
         }
 
         if (!chunk.GetBlock(x, y - 1, z).IsCovered(Direction.up, chunk, x, y - 1, z))
         {
             meshData = FaceDataDown(chunk, x, y, z, meshData);
+            //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.down);
         }
-
-        /*
-        Block colBlock = new Block();
-        MeshData colMeshData = new MeshData();
         
-
-        colMeshData = colBlock.Blockdata(chunk, x, y, z, colMeshData);
-
-
-        meshData.colTriangles.AddRange(colMeshData.colTriangles);
-
-        meshData.colVertices.AddRange(colMeshData.colVertices);
-        */
-
         CollisionBlockdata(chunk, x, y, z, meshData);
 
         return meshData;
@@ -67,39 +55,39 @@ public class BlockPyramid : Block
       (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
 
-        meshData.AddVertex(new Vector3(x, y + 0.5f, z), blockColor);
+        
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x, y + 0.5f, z) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor); 
         meshData.AddTriangle(meshData.vertices.Count - 1);
-
-        meshData.AddVertex(new Vector3(x - 0.5f, y - 0.5f, z + 0.5f), blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
         meshData.AddTriangle(meshData.vertices.Count - 1);
-        meshData.AddVertex(new Vector3(x + 0.5f, y - 0.5f, z + 0.5f), blockColor);
-        meshData.AddTriangle(meshData.vertices.Count - 1);
-
-        meshData.uv.AddRange(FaceUVs(Direction.up));
-
-        meshData.AddVertex(new Vector3(x, y + 0.5f, z), blockColor);
-        meshData.AddTriangle(meshData.vertices.Count - 1);
-        meshData.AddVertex(new Vector3(x + 0.5f, y - 0.5f, z - 0.5f), blockColor);
-        meshData.AddTriangle(meshData.vertices.Count - 1);
-        meshData.AddVertex(new Vector3(x - 0.5f, y - 0.5f, z - 0.5f), blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
         meshData.AddTriangle(meshData.vertices.Count - 1);
 
         meshData.uv.AddRange(FaceUVs(Direction.up));
 
-        meshData.AddVertex(new Vector3(x, y + 0.5f, z), blockColor);
+        meshData.AddVertex( Quaternion.Euler(blockRotation) * (new Vector3(x, y + 0.5f, z) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
         meshData.AddTriangle(meshData.vertices.Count - 1);
-        meshData.AddVertex(new Vector3(x - 0.5f, y - 0.5f, z - 0.5f), blockColor);
+        meshData.AddVertex( Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
         meshData.AddTriangle(meshData.vertices.Count - 1);
-        meshData.AddVertex(new Vector3(x - 0.5f, y - 0.5f, z + 0.5f), blockColor);
+        meshData.AddVertex( Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
         meshData.AddTriangle(meshData.vertices.Count - 1);
 
         meshData.uv.AddRange(FaceUVs(Direction.up));
 
-        meshData.AddVertex(new Vector3(x, y + 0.5f, z), blockColor);
+        meshData.AddVertex( Quaternion.Euler(blockRotation) * (new Vector3(x, y + 0.5f, z) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
         meshData.AddTriangle(meshData.vertices.Count - 1);
-        meshData.AddVertex(new Vector3(x + 0.5f, y - 0.5f, z + 0.5f), blockColor);
+        meshData.AddVertex( Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
         meshData.AddTriangle(meshData.vertices.Count - 1);
-        meshData.AddVertex(new Vector3(x + 0.5f, y - 0.5f, z - 0.5f), blockColor);
+        meshData.AddVertex( Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
+        meshData.AddTriangle(meshData.vertices.Count - 1);
+
+        meshData.uv.AddRange(FaceUVs(Direction.up));
+
+        meshData.AddVertex( Quaternion.Euler(blockRotation) * (new Vector3(x, y + 0.5f, z) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
+        meshData.AddTriangle(meshData.vertices.Count - 1);
+        meshData.AddVertex( Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
+        meshData.AddTriangle(meshData.vertices.Count - 1);
+        meshData.AddVertex( Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
         meshData.AddTriangle(meshData.vertices.Count - 1);
 
         meshData.uv.AddRange(FaceUVs(Direction.up));
@@ -109,10 +97,10 @@ public class BlockPyramid : Block
     protected override MeshData FaceDataDown
          (Chunk chunk, float x, float y, float z, MeshData meshData)
     {
-        meshData.AddVertex(new Vector3(x - 0.5f, y - 0.5f, z - 0.5f), blockColor);
-        meshData.AddVertex(new Vector3(x + 0.5f, y - 0.5f, z - 0.5f), blockColor);
-        meshData.AddVertex(new Vector3(x + 0.5f, y - 0.5f, z + 0.5f), blockColor);
-        meshData.AddVertex(new Vector3(x - 0.5f, y - 0.5f, z + 0.5f), blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
 
         meshData.AddQuadTriangles();
 
@@ -144,38 +132,30 @@ public class BlockPyramid : Block
     {
         return meshData;
     }
-
-
+    
     /// <summary>
-    /// Checks if the face in the specified direction is solid
+    /// Returns if an object is solid
     /// </summary>
-    /// <param name="direction">the direction of the face to check</param>
+    /// <param name="direction"></param>
     /// <returns></returns>
-    public override bool IsSolid(Direction direction, bool forCollision = false)
+    public override bool GetSolidity(Direction direction)
     {
-        if (covered || forCollision)
+        switch (direction)
         {
-            return true;
-        }
-        else
-        {
-            switch (direction)
-            {
-                case Direction.north:
-                    return false;
-                case Direction.east:
-                    return false;
-                case Direction.south:
-                    return false;
-                case Direction.west:
-                    return false;
-                case Direction.up:
-                    return false;
-                case Direction.down:
-                    return true;
-                default:
-                    return false;
-            }
+            case Direction.north:
+                return false;
+            case Direction.east:
+                return false;
+            case Direction.south:
+                return false;
+            case Direction.west:
+                return false;
+            case Direction.up:
+                return false;
+            case Direction.down:
+                return true;
+            default:
+                return false;
         }
     }
 
