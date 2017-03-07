@@ -15,7 +15,9 @@ public class PlayerEditor : MonoBehaviour {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit, 100f))
             {
-                WorldEditor.SetBlock(hit, new Block(blockCreationController.currentRotation, blockCreationController.currentColor), true);
+                Block tempBlock = new Block(blockCreationController.currentRotation, blockCreationController.currentColor);
+                tempBlock.debugIsTrue = true;
+                WorldEditor.SetBlock(hit, tempBlock, true);
                 
             }
             
