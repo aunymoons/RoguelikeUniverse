@@ -61,6 +61,17 @@ public class Block
     /// <returns></returns>
     public virtual MeshData Blockdata(Chunk chunk, int x, int y, int z, MeshData meshData)
     {
+        if (debugIsTrue)
+        {
+            Debug.Log(CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.north));
+            Debug.Log(CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.south));
+            Debug.Log(CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.east));
+            Debug.Log(CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.west));
+            Debug.Log(CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.up));
+            Debug.Log(CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.down));
+        }
+            
+
 
         //meshData.useRenderDataForCol = true;
 
@@ -68,42 +79,45 @@ public class Block
         //if(GetBlockByRotation(chunk, x, y, z, Direction.up))
         {
             //meshData = FaceDataUp(chunk, x, y, z, meshData);
-            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.up);
+            
+
+            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.up)); 
         }
 
         if (!chunk.GetBlock(x, y - 1, z).IsCovered(Direction.up, chunk, x, y - 1, z))
         //if (GetBlockByRotation(chunk, x, y, z, Direction.down))
         {
             //meshData = FaceDataDown(chunk, x, y, z, meshData);
-            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.down);
+            
+            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.down));
         }
 
         if (!chunk.GetBlock(x, y, z + 1).IsCovered(Direction.south, chunk, x, y, z + 1))
         //if (GetBlockByRotation(chunk, x, y, z, Direction.north))
         {
             //meshData = FaceDataNorth(chunk, x, y, z, meshData);
-            GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.north);
+            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.north));
         }
 
         if (!chunk.GetBlock(x, y, z - 1).IsCovered(Direction.north, chunk, x, y, z - 1))
         //if (GetBlockByRotation(chunk, x, y, z, Direction.south))
         {
             //meshData = FaceDataSouth(chunk, x, y, z, meshData);
-            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.south);
+            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.south));
         }
 
         if (!chunk.GetBlock(x + 1, y, z).IsCovered(Direction.west, chunk, x + 1, y, z))
         //if (GetBlockByRotation(chunk, x, y, z, Direction.east))
         {
             //meshData = FaceDataEast(chunk, x, y, z, meshData);
-            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.east);
+            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.east));
         }
 
         if (!chunk.GetBlock(x - 1, y, z).IsCovered(Direction.east, chunk, x - 1, y, z))
         //if (GetBlockByRotation(chunk, x, y, z, Direction.west))
         {
             //meshData = FaceDataWest(chunk, x, y, z, meshData);
-            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.west);
+            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.west));
         }
 
         CollisionBlockdata(chunk, x, y, z, meshData);
@@ -503,6 +517,10 @@ public class Block
     /// <returns></returns>
     public virtual bool CheckSolidityWithRotation(Direction direction)
     {
+
+        return GetSolidity(CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, direction));
+
+        /*
         Direction currentDirection = direction;
         bool result = GetSolidity(currentDirection);
 
@@ -856,12 +874,14 @@ public class Block
                     result = GetSolidity(Direction.up);
                     break;
             }
-            */
+            
 
         }
 
 
         return result;
+
+        */
     }
 
     /// <summary>
@@ -903,6 +923,13 @@ public class Block
     /// <returns></returns>
     public MeshData GetMeshDataFromRotation(Chunk chunk, int x, int y, int z, MeshData meshData, Direction direction)
     {
+
+        meshData = GetMeshData(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, direction));
+
+        return meshData;
+
+
+        /*
         Direction currentDirection = direction;
         //MeshData result;
 
@@ -1230,6 +1257,8 @@ public class Block
         meshData = GetMeshData(chunk, x, y, z, meshData, currentDirection);
 
         return meshData;
+
+        */
     }
 
     MeshData GetMeshData(Chunk chunk, int x, int y, int z, MeshData meshData, Direction direction)
@@ -1366,8 +1395,811 @@ public class Block
         return meshData;
     }
 
+    int RotateSides(int x, int y, int z, int oDir, int[] sideArray)
+    {
+        if (z != 0)
+        {
+            if (z == 0)
+            {
+            }
+            if (z == 90)
+            {
+                switch (oDir)
+                {
+                    case 2:
+                        oDir = 5;
+                        break;
+                    case 3:
+                        oDir = 4;
+                        break;
+                    case 4:
+                        oDir = 2;
+                        break;
+                    case 5:
+                        oDir = 3;
+                        break;
+                    case 0:
+                        oDir = 0;
+                        break;
+                    case 1:
+                        oDir = 1;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (z == 180)
+            {
+                switch (oDir)
+                {
+                    case 2:
+                        oDir = 3;
+                        break;
+                    case 3:
+                        oDir = 2;
+                        break;
+                    case 4:
+                        oDir = 5;
+                        break;
+                    case 5:
+                        oDir = 4;
+                        break;
+                    case 0:
+                        oDir = 0;
+                        break;
+                    case 1:
+                        oDir = 1;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (z == 270)
+            {
+                switch (oDir)
+                {
+                    case 2:
+                        oDir = 4;
+                        break;
+                    case 3:
+                        oDir = 5;
+                        break;
+                    case 4:
+                        oDir = 3;
+                        break;
+                    case 5:
+                        oDir = 2;
+                        break;
+                    case 0:
+                        oDir = 0;
+                        break;
+                    case 1:
+                        oDir = 1;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        if (x != 0)
+        {
+            if (x == 0)
+            {
+                //meshData = GetMeshData(chunk,x,y,z,meshData,oDir);
+            }
+            if (x == 90)
+            {
+                switch (oDir)
+                {
+                    case 0:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,5);
+                        oDir = 4;
+                        break;
+                    case 1:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,4);
+                        oDir = 5;
+                        break;
+                    case 4:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,0);
+                        oDir = 1;
+                        break;
+                    case 5:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,1);
+                        oDir = 0;
+                        break;
+                    case 2:
+                        oDir = 2;
+                        break;
+                    case 3:
+                        oDir = 3;
+                        break;
+                    default:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,oDir);
+                        break;
+                }
+            }
+            if (x == 180)
+            {
+                switch (oDir)
+                {
+                    case 0:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,1);
+                        oDir = 1;
+                        break;
+                    case 1:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,0);
+                        oDir = 0;
+                        break;
+                    case 4:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,5);
+                        oDir = 5;
+                        break;
+                    case 5:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,4);
+                        oDir = 4;
+                        break;
+                    case 2:
+                        oDir = 2;
+                        break;
+                    case 3:
+                        oDir = 3;
+                        break;
+                    default:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,oDir);
+                        break;
+                }
+            }
+            if (x == 270)
+            {
+                switch (oDir)
+                {
+                    case 0:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,4);
+                        oDir = 5;
+                        break;
+                    case 1:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,5);
+                        oDir = 4;
+                        break;
+                    case 4:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,1);
+                        oDir = 0;
+                        break;
+                    case 5:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,0);
+                        oDir = 1;
+                        break;
+                    case 2:
+                        oDir = 2;
+                        break;
+                    case 3:
+                        oDir = 3;
+                        break;
+                    default:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,oDir);
+                        break;
+                }
+            }
+
+        }
+
+        if (y != 0)
+        {
+
+            if (y == 0)
+            {
+                //meshData = GetMeshData(chunk,x,y,z,meshData,oDir);
+            }
+            if (y == 90)
+            {
+                switch (oDir)
+                {
+                    case 0:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,3);
+                        oDir = 3;
+                        break;
+                    case 1:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,2);
+                        oDir = 2;
+                        break;
+                    case 2:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,0);
+                        oDir = 0;
+                        break;
+                    case 3:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,1);
+                        oDir = 1;
+                        break;
+                    case 4:
+                        oDir = 4;
+                        break;
+                    case 5:
+                        oDir = 5;
+                        break;
+                    default:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,oDir);
+                        break;
+                }
+            }
+            if (y == 180)
+            {
+                switch (oDir)
+                {
+                    case 0:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,1);
+                        oDir = 1;
+                        break;
+                    case 1:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,0);
+                        oDir = 0;
+                        break;
+                    case 2:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,3);
+                        oDir = 3;
+                        break;
+                    case 3:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,2);
+                        oDir = 2;
+                        break;
+                    case 4:
+                        oDir = 4;
+                        break;
+                    case 5:
+                        oDir = 5;
+                        break;
+                    default:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,oDir);
+                        break;
+                }
+            }
+            if (y == 270)
+            {
+                switch (oDir)
+                {
+                    case 0:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,2);
+                        oDir = 2;
+                        break;
+                    case 1:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,3);
+                        oDir = 3;
+                        break;
+                    case 2:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,1);
+                        oDir = 1;
+                        break;
+                    case 3:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,0);
+                        oDir = 0;
+                        break;
+                    case 4:
+                        oDir = 4;
+                        break;
+                    case 5:
+                        oDir = 5;
+                        break;
+                    default:
+                        //meshData = GetMeshData(chunk,x,y,z,meshData,oDir);
+                        break;
+                }
+            }
+        }
+        
+
+        return oDir;
+    }
+
+    Direction CalculateDirectionBasedOnRotation(int x, int y, int z, Direction startDirection)
+    {
+        int startDirectionNumber;
+
+        switch (startDirection)
+        {
+            case Direction.north:
+                startDirectionNumber = 0;
+                break;
+            case Direction.south:
+                startDirectionNumber = 1;
+                break;
+            case Direction.east:
+                startDirectionNumber = 2;
+                break;
+            case Direction.west:
+                startDirectionNumber = 3;
+                break;
+            case Direction.up:
+                startDirectionNumber = 4;
+                break;
+            case Direction.down:
+                startDirectionNumber = 5;
+                break;
+            default:
+                startDirectionNumber = 0;
+                break;
+        }
+
+        int[] sides = new int[6];
+
+        //assigns sides accordingly
+        for (int i = 0; i < sides.Length; i++)
+        {
+            sides[i] = i;
+        }
+
+        //Z Rotation
+        for (int i = 0; i < sides.Length; i++)
+        {
+            sides[i] = sides[RotateSides(0, 0, z, i, sides)];
+        }
+
+        //X Rotation
+        for (int i = 0; i < sides.Length; i++)
+        {
+            sides[i] = sides[RotateSides(x, 0, 0, i, sides)];
+        }
+
+        //Y Rotation
+        for (int i = 0; i < sides.Length; i++)
+        {
+            sides[i] = sides[RotateSides(0, y, 0, i, sides)];
+        }
+
+        switch (sides[startDirectionNumber])
+        {
+            case 0:
+                return Direction.north;
+            case 1:
+                return Direction.south;
+            case 2:
+                return Direction.east;
+            case 3:
+                return Direction.west;
+            case 4:
+                return Direction.up;
+            case 5:
+                return Direction.down;
+            default:
+                return startDirection;
+        }
 
 
+        /*
+        switch (z)
+        {
+            case 0:
+                switch (x)
+                {
+                    case 0:
+                        switch (y)
+                        {
+                            case 0:
+                                return startDirection;
+                            case 90:
+                                switch (startDirection)
+                                {
+                                    case Direction.north: return Direction.west;
+                                    case Direction.south: return Direction.east;
+                                    case Direction.east: return Direction.north;
+                                    case Direction.west: return Direction.south;
+                                    case Direction.up: return Direction.up;
+                                    case Direction.down: return Direction.down;
+                                }
+                                break;
+                            case 180:
+                                switch (startDirection)
+                                {
+                                    case Direction.north: return Direction.south;
+                                    case Direction.south: return Direction.north;
+                                    case Direction.east: return Direction.west;
+                                    case Direction.west: return Direction.east;
+                                    case Direction.up: return Direction.up;
+                                    case Direction.down: return Direction.down;
+                                }
+                                break;
+                            case 270:
+                                switch (startDirection)
+                                {
+                                    case Direction.north: return Direction.east;
+                                    case Direction.south: return Direction.west;
+                                    case Direction.east: return Direction.south;
+                                    case Direction.west: return Direction.north;
+                                    case Direction.up: return Direction.up;
+                                    case Direction.down: return Direction.down;
+                                }
+                                break;
+                            default:
+                                //throw exception
+                                break;
+                        }
+                        break;
+                    case 90:
+                        switch (y)
+                        {
+                            case 0:
+                                switch (startDirection)
+                                {
+                                    case Direction.north: return Direction.up;
+                                    case Direction.south: return Direction.down;
+                                    case Direction.east: return Direction.east;
+                                    case Direction.west: return Direction.west;
+                                    case Direction.up: return Direction.south;
+                                    case Direction.down: return Direction.north;
+                                }
+                                break;
+                            case 90:
+                                switch (startDirection)
+                                {
+                                    case Direction.north: return Direction.west;
+                                    case Direction.south: return Direction.east;
+                                    case Direction.east: return Direction.up;
+                                    case Direction.west: return Direction.down;
+                                    case Direction.up: return Direction.south;
+                                    case Direction.down: return Direction.north;
+                                }
+                                break;
+                            case 180:
+                                switch (startDirection)
+                                {
+                                    case Direction.north: return Direction.down;
+                                    case Direction.south: return Direction.up;
+                                    case Direction.east: return Direction.west;
+                                    case Direction.west: return Direction.east;
+                                    case Direction.up: return Direction.south;
+                                    case Direction.down: return Direction.north;
+                                }
+                                break;
+                            case 270:
+                                switch (startDirection)
+                                {
+                                    case Direction.north: return Direction.east;
+                                    case Direction.south: return Direction.west;
+                                    case Direction.east: return Direction.down;
+                                    case Direction.west: return Direction.up;
+                                    case Direction.up: return Direction.south;
+                                    case Direction.down: return Direction.north;
+                                }
+                                break;
+                            default:
+                                //throw exception
+                                break;
+                        }
+                        break;
+                    case 180:
+                        switch (y)
+                        {
+                            case 0:
+                                switch (startDirection)
+                                {
+                                    case Direction.north: return Direction.south;
+                                    case Direction.south: return Direction.north;
+                                    case Direction.east: return Direction.east;
+                                    case Direction.west: return Direction.west;
+                                    case Direction.up: return Direction.down;
+                                    case Direction.down: return Direction.up;
+                                }
+                                break;
+                            case 90:
+                                switch (startDirection)
+                                {
+                                    case Direction.north: return Direction.west;
+                                    case Direction.south: return Direction.east;
+                                    case Direction.east: return Direction.south;
+                                    case Direction.west: return Direction.north;
+                                    case Direction.up: return Direction.down;
+                                    case Direction.down: return Direction.up;
+                                }
+                                break;
+                            case 180:
+                                switch (startDirection)
+                                {
+                                    case Direction.north: return Direction.north;
+                                    case Direction.south: return Direction.south;
+                                    case Direction.east: return Direction.west;
+                                    case Direction.west: return Direction.east;
+                                    case Direction.up: return Direction.down;
+                                    case Direction.down: return Direction.up;
+                                }
+                                break;
+                            case 270:
+                                switch (startDirection)
+                                {
+                                    case Direction.north: return Direction.east;
+                                    case Direction.south: return Direction.west;
+                                    case Direction.east: return Direction.north;
+                                    case Direction.west: return Direction.south;
+                                    case Direction.up: return Direction.down;
+                                    case Direction.down: return Direction.up;
+                                }
+                                break;
+                            default:
+                                //throw exception
+                                break;
+                        }
+                        break;
+                    case 270:
+                        switch (y)
+                        {
+                            case 0:
+                                switch (startDirection)
+                                {
+                                    case Direction.north: return Direction.down;
+                                    case Direction.south: return Direction.up;
+                                    case Direction.east: return Direction.east;
+                                    case Direction.west: return Direction.west;
+                                    case Direction.up: return Direction.north;
+                                    case Direction.down: return Direction.south;
+                                }
+                                break;
+                            case 90:
+                                switch (startDirection)
+                                {
+                                    case Direction.north: return Direction.west;
+                                    case Direction.south: return Direction.east;
+                                    case Direction.east: return Direction.down;
+                                    case Direction.west: return Direction.up;
+                                    case Direction.up: return Direction.north;
+                                    case Direction.down: return Direction.south;
+                                }
+                                break;
+                            case 180:
+                                switch (startDirection)
+                                {
+                                    case Direction.north: return Direction.up;
+                                    case Direction.south: return Direction.down;
+                                    case Direction.east: return Direction.west;
+                                    case Direction.west: return Direction.east;
+                                    case Direction.up: return Direction.north;
+                                    case Direction.down: return Direction.south;
+                                }
+                                break;
+                            case 270:
+                                switch (startDirection)
+                                {
+                                    case Direction.north: return Direction.east;
+                                    case Direction.south: return Direction.west;
+                                    case Direction.east: return Direction.up;
+                                    case Direction.west: return Direction.down;
+                                    case Direction.up: return Direction.north;
+                                    case Direction.down: return Direction.south;
+                                }
+                                break;
+                            default:
+                                //throw exception
+                                break;
+                        }
+                        break;
+                    default:
+                        //throw exception
+                        break;
+                }
+                break;
+            case 90:
+                switch (x)
+                {
+                    case 0:
+                        switch (y)
+                        {
+                            case 0:
+                                break;
+                            case 90:
+                                break;
+                            case 180:
+                                break;
+                            case 270:
+                                break;
+                            default:
+                                //throw exception
+                                break;
+                        }
+                        break;
+                    case 90:
+                        switch (y)
+                        {
+                            case 0:
+                                break;
+                            case 90:
+                                break;
+                            case 180:
+                                break;
+                            case 270:
+                                break;
+                            default:
+                                //throw exception
+                                break;
+                        }
+                        break;
+                    case 180:
+                        switch (y)
+                        {
+                            case 0:
+                                break;
+                            case 90:
+                                break;
+                            case 180:
+                                break;
+                            case 270:
+                                break;
+                            default:
+                                //throw exception
+                                break;
+                        }
+                        break;
+                    case 270:
+                        switch (y)
+                        {
+                            case 0:
+                                break;
+                            case 90:
+                                break;
+                            case 180:
+                                break;
+                            case 270:
+                                break;
+                            default:
+                                //throw exception
+                                break;
+                        }
+                        break;
+                    default:
+                        //throw exception
+                        break;
+                }
+                break;
+            case 180:
+                switch (x)
+                {
+                    case 0:
+                        switch (y)
+                        {
+                            case 0:
+                                break;
+                            case 90:
+                                break;
+                            case 180:
+                                break;
+                            case 270:
+                                break;
+                            default:
+                                //throw exception
+                                break;
+                        }
+                        break;
+                    case 90:
+                        switch (y)
+                        {
+                            case 0:
+                                break;
+                            case 90:
+                                break;
+                            case 180:
+                                break;
+                            case 270:
+                                break;
+                            default:
+                                //throw exception
+                                break;
+                        }
+                        break;
+                    case 180:
+                        switch (y)
+                        {
+                            case 0:
+                                break;
+                            case 90:
+                                break;
+                            case 180:
+                                break;
+                            case 270:
+                                break;
+                            default:
+                                //throw exception
+                                break;
+                        }
+                        break;
+                    case 270:
+                        switch (y)
+                        {
+                            case 0:
+                                break;
+                            case 90:
+                                break;
+                            case 180:
+                                break;
+                            case 270:
+                                break;
+                            default:
+                                //throw exception
+                                break;
+                        }
+                        break;
+                    default:
+                        //throw exception
+                        break;
+                }
+                break;
+            case 270:
+                switch (x)
+                {
+                    case 0:
+                        switch (y)
+                        {
+                            case 0:
+                                break;
+                            case 90:
+                                break;
+                            case 180:
+                                break;
+                            case 270:
+                                break;
+                            default:
+                                //throw exception
+                                break;
+                        }
+                        break;
+                    case 90:
+                        switch (y)
+                        {
+                            case 0:
+                                break;
+                            case 90:
+                                break;
+                            case 180:
+                                break;
+                            case 270:
+                                break;
+                            default:
+                                //throw exception
+                                break;
+                        }
+                        break;
+                    case 180:
+                        switch (y)
+                        {
+                            case 0:
+                                break;
+                            case 90:
+                                break;
+                            case 180:
+                                break;
+                            case 270:
+                                break;
+                            default:
+                                //throw exception
+                                break;
+                        }
+                        break;
+                    case 270:
+                        switch (y)
+                        {
+                            case 0:
+                                break;
+                            case 90:
+                                break;
+                            case 180:
+                                break;
+                            case 270:
+                                break;
+                            default:
+                                //throw exception
+                                break;
+                        }
+                        break;
+                    default:
+                        //throw exception
+                        break;
+                }
+                break;
+            default:
+                //throw exception
+                break;
+        }
+
+        //Fallback
+        return startDirection;
+
+    */
+    }
 
 
 
