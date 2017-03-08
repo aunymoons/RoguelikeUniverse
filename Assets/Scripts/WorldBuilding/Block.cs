@@ -38,6 +38,7 @@ public class Block
     #endregion
 
     public bool debugIsTrue;
+    Direction[] invertedDirections;
 
     #region Mesh Generation
 
@@ -48,6 +49,71 @@ public class Block
     {
         blockColor = color;
         blockRotation = rotation;
+        
+        invertedDirections = new Direction[6];
+
+        for(int i = 0; i < invertedDirections.Length; i++)
+        {
+            invertedDirections[i] = CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, GetDirectionByNumber(i));
+        }
+    }
+
+    public Direction GetDirectionByNumber(int num)
+    {
+        switch (num)
+        {
+            case 0:
+                return Direction.north;
+            case 1:
+                return Direction.south;
+            case 2:
+                return Direction.east;
+            case 3:
+                return Direction.west;
+            case 4:
+                return Direction.up;
+            case 5:
+                return Direction.down;
+            default:
+                //throw exception
+                return Direction.north;
+        }
+    }
+
+    public int GetNumberByDirection(Direction dir)
+    {
+        switch (dir)
+        {
+            case Direction.north:
+                return  0;
+            case Direction.south:
+                return  1;
+            case Direction.east:
+                return  2;
+            case Direction.west:
+                return  3;
+            case Direction.up:
+                return  4;
+            case Direction.down:
+                return  5;
+            default:
+                //throw exception
+                return  0;
+        }
+    }
+
+    public Direction GetInvertedDirection(Direction direction)
+    {
+        int result;
+
+        for(int i = 0; i < invertedDirections.Length; i++)
+        {
+            if(invertedDirections[i] == direction)
+            {
+                return GetDirectionByNumber(i);
+            }
+        }
+        return direction;
     }
 
     /// <summary>
@@ -81,8 +147,8 @@ public class Block
             //meshData = FaceDataUp(chunk, x, y, z, meshData);
             
 
-            //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.up)); 
-            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.up); 
+            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, GetInvertedDirection(Direction.up))); 
+            //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, GetInvertedDirection(Direction.up)); 
         
         }
 
@@ -90,41 +156,41 @@ public class Block
         //if (GetBlockByRotation(chunk, x, y, z, Direction.down))
         {
             //meshData = FaceDataDown(chunk, x, y, z, meshData);
-            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.down); 
-            //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.down));
+            //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.down); 
+            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, GetInvertedDirection(Direction.down)));
         }
 
         if (!chunk.GetBlock(x, y, z + 1).IsCovered(Direction.south, chunk, x, y, z + 1))
         //if (GetBlockByRotation(chunk, x, y, z, Direction.north))
         {
             //meshData = FaceDataNorth(chunk, x, y, z, meshData);
-          meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.north); 
+          //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.north); 
          
-            //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.north));
+            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, GetInvertedDirection(Direction.north)));
         }
 
         if (!chunk.GetBlock(x, y, z - 1).IsCovered(Direction.north, chunk, x, y, z - 1))
         //if (GetBlockByRotation(chunk, x, y, z, Direction.south))
         {
             //meshData = FaceDataSouth(chunk, x, y, z, meshData);
-         meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.south); 
-            //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.south));
+         //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.south); 
+            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, GetInvertedDirection(Direction.south)));
         }
 
         if (!chunk.GetBlock(x + 1, y, z).IsCovered(Direction.west, chunk, x + 1, y, z))
         //if (GetBlockByRotation(chunk, x, y, z, Direction.east))
         {
             //meshData = FaceDataEast(chunk, x, y, z, meshData);
-         meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.east); 
-            //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.east));
+         //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.east); 
+            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, GetInvertedDirection(Direction.east)));
         }
 
         if (!chunk.GetBlock(x - 1, y, z).IsCovered(Direction.east, chunk, x - 1, y, z))
         //if (GetBlockByRotation(chunk, x, y, z, Direction.west))
         {
             //meshData = FaceDataWest(chunk, x, y, z, meshData);
-         meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.west); 
-            //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.west));
+         //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.west); 
+            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, GetInvertedDirection(Direction.west)));
         }
 
         CollisionBlockdata(chunk, x, y, z, meshData);
