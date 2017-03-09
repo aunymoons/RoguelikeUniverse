@@ -3,6 +3,7 @@
  Class that represents a chunk of world, it holds the construction information of every block
  */
 using UnityEngine;
+using System.Threading;
 using System.Collections;
 
 //Required components
@@ -20,7 +21,7 @@ public class Chunk : MonoBehaviour
     private Block[,,] blocks = new Block[chunkSize, chunkSize, chunkSize];
 
     //The average size of a chunk
-    public static int chunkSize = 16;
+    public static int chunkSize = 10;
   
 
     //A flag to mark this chunk whenever its updated so that the information gets recalculated by the end of the frame
@@ -102,6 +103,15 @@ public class Chunk : MonoBehaviour
     ///</summary>
     void UpdateChunk()
     {
+        //Thread t = new Thread(ThreadBlockData);
+        //t.Start();
+        //System.GC.Collect();
+
+        ThreadBlockData();
+    }
+
+    void ThreadBlockData()
+    {
         MeshData meshData = new MeshData();
         for (int x = 0; x < chunkSize; x++)
         {
@@ -123,7 +133,7 @@ public class Chunk : MonoBehaviour
     {
         meshFilter.mesh.Clear();
         meshFilter.mesh.vertices = meshData.vertices.ToArray();
-        Debug.Log(meshFilter.mesh.vertices.Length);
+        //Debug.Log(meshFilter.mesh.vertices.Length);
         meshFilter.mesh.triangles = meshData.triangles.ToArray();
 
         meshFilter.mesh.colors = meshData.colors.ToArray();

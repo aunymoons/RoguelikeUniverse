@@ -12,8 +12,9 @@ public class World : MonoBehaviour {
     
     // Use this for initialization
     void Start () {
-
-        for (int x = -((int)worldSize.x/2); x < ((int)worldSize.x / 2); x++)
+        //StartCoroutine(GenerateWorld());
+        
+        for (int x = -((int)worldSize.x / 2); x < ((int)worldSize.x / 2); x++)
         {
             for (int y = 0; y < worldSize.y; y++)
             {
@@ -23,8 +24,24 @@ public class World : MonoBehaviour {
                 }
             }
         }
+        
     }
-	
+    /*
+    public IEnumerator GenerateWorld()
+    {
+        for (int x = -((int)worldSize.x / 2); x < ((int)worldSize.x / 2); x++)
+        {
+            for (int y = 0; y < worldSize.y; y++)
+            {
+                for (int z = -((int)worldSize.z / 2); z < ((int)worldSize.z / 2); z++)
+                {
+                    CreateChunk(x * (Chunk.chunkSize), y * (Chunk.chunkSize), z * (Chunk.chunkSize));
+                }
+            }
+        }
+        
+    }
+	*/
 	// Update is called once per frame
 	void Update () {
 		
@@ -65,13 +82,32 @@ public class World : MonoBehaviour {
             {
                 for (int zi = 0; zi < Chunk.chunkSize; zi++)
                 {
-                    if (yi <= 0)
+                    if (yi <= Mathf.PerlinNoise(xi * 10, zi * 10) )
                     {
                         SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(0, 0, 0), Color.white));
                     }
                     else
                     {
-                        SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white));
+                        //SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white));
+                        int rand = Random.Range(0, 3);
+                        if (rand == 1)
+                        {
+                            int thisx = Random.Range(0, 5) * 90;
+                            int thisy = Random.Range(0, 5) * 90;
+                            int thisz = Random.Range(0, 5) * 90;
+                            SetBlock(x + xi, y + yi, z + zi, new BlockPyramid(new Vector3(thisx, thisy, thisz), Random.ColorHSV()));
+                        }
+                        else if(rand == 2)
+                        {
+                            int thisx = Random.Range(0, 5) * 90;
+                            int thisy = Random.Range(0, 5) * 90;
+                            int thisz = Random.Range(0, 5) * 90;
+                            SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(thisx, thisy, thisz), Random.ColorHSV()));
+                        }
+                        else
+                        {
+                            SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white));
+                        }
                     }
                 }
             }
@@ -79,6 +115,7 @@ public class World : MonoBehaviour {
 
         gameObject.SetActive(false);
         gameObject.SetActive(true);
+        
     }
 
     public void DestroyChunk(int x, int y, int z)

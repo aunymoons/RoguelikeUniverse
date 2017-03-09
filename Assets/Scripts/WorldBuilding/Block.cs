@@ -38,6 +38,8 @@ public class Block
     #endregion
 
     public bool debugIsTrue;
+    public bool[] pieces;
+    public int[] sides;
     Direction[] invertedDirections;
 
     #region Mesh Generation
@@ -52,13 +54,15 @@ public class Block
         
         invertedDirections = new Direction[6];
 
-        for(int i = 0; i < invertedDirections.Length; i++)
+        CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z);
+
+        for (int i = 0; i < invertedDirections.Length; i++)
         {
-            invertedDirections[i] = CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, GetDirectionByNumber(i));
+            invertedDirections[i] = ReturnDirectionBasedOnRotation(GetDirectionByNumber(i));
         }
     }
 
-    public Direction GetDirectionByNumber(int num)
+    protected Direction GetDirectionByNumber(int num)
     {
         switch (num)
         {
@@ -80,7 +84,7 @@ public class Block
         }
     }
 
-    public int GetNumberByDirection(Direction dir)
+    protected int GetNumberByDirection(Direction dir)
     {
         switch (dir)
         {
@@ -102,7 +106,7 @@ public class Block
         }
     }
 
-    public Direction GetInvertedDirection(Direction direction)
+    protected Direction GetInvertedDirection(Direction direction)
     {
         int result;
 
@@ -116,6 +120,14 @@ public class Block
         return direction;
     }
 
+    protected void ClearPieces()
+    {
+        for(int i = 0; i < pieces.Length; i++)
+        {
+            pieces[i] = false;
+        }
+    }
+
     /// <summary>
     /// Function that returns the meshdata in a position given a set of coordinates and a chunk
     /// </summary>
@@ -125,416 +137,55 @@ public class Block
     /// <param name="z"></param>
     /// <param name="meshData"></param>
     /// <returns></returns>
+
     public virtual MeshData Blockdata(Chunk chunk, int x, int y, int z, MeshData meshData)
     {
-        if (debugIsTrue)
+        if (
+            chunk.GetBlock(x, y - 1, z).IsSolid(Direction.up, false) &&
+            chunk.GetBlock(x, y + 1, z).IsSolid(Direction.down, false) &&
+            chunk.GetBlock(x, y, z - 1).IsSolid(Direction.north, false) &&
+            chunk.GetBlock(x, y, z + 1).IsSolid(Direction.south, false) &&
+            chunk.GetBlock(x - 1, y, z).IsSolid(Direction.east, false) &&
+            chunk.GetBlock(x + 1, y, z).IsSolid(Direction.west, false)
+        )
+        return meshData;
+
+            //meshData.useRenderDataForCol = true;
+
+            if (!chunk.GetBlock(x, y + 1, z).IsCovered(Direction.down, chunk, x, y + 1, z))
         {
-            Debug.Log(CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.north));
-            Debug.Log(CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.south));
-            Debug.Log(CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.east));
-            Debug.Log(CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.west));
-            Debug.Log(CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.up));
-            Debug.Log(CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, Direction.down));
-        }
-            
-
-
-        //meshData.useRenderDataForCol = true;
-
-        if (!chunk.GetBlock(x, y + 1, z).IsCovered(Direction.down, chunk, x, y + 1, z))
-        //if(GetBlockByRotation(chunk, x, y, z, Direction.up))
-        {
-            //meshData = FaceDataUp(chunk, x, y, z, meshData);
-            
-
-            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, GetInvertedDirection(Direction.up))); 
-            //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, GetInvertedDirection(Direction.up)); 
-        
+            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, ReturnDirectionBasedOnRotation(GetInvertedDirection(Direction.up))); 
         }
 
         if (!chunk.GetBlock(x, y - 1, z).IsCovered(Direction.up, chunk, x, y - 1, z))
-        //if (GetBlockByRotation(chunk, x, y, z, Direction.down))
         {
-            //meshData = FaceDataDown(chunk, x, y, z, meshData);
-            //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.down); 
-            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, GetInvertedDirection(Direction.down)));
+            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, ReturnDirectionBasedOnRotation(GetInvertedDirection(Direction.down)));
         }
 
         if (!chunk.GetBlock(x, y, z + 1).IsCovered(Direction.south, chunk, x, y, z + 1))
-        //if (GetBlockByRotation(chunk, x, y, z, Direction.north))
         {
-            //meshData = FaceDataNorth(chunk, x, y, z, meshData);
-          //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.north); 
-         
-            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, GetInvertedDirection(Direction.north)));
+            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, ReturnDirectionBasedOnRotation(GetInvertedDirection(Direction.north)));
         }
 
         if (!chunk.GetBlock(x, y, z - 1).IsCovered(Direction.north, chunk, x, y, z - 1))
-        //if (GetBlockByRotation(chunk, x, y, z, Direction.south))
         {
-            //meshData = FaceDataSouth(chunk, x, y, z, meshData);
-         //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.south); 
-            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, GetInvertedDirection(Direction.south)));
+            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, ReturnDirectionBasedOnRotation(GetInvertedDirection(Direction.south)));
         }
 
         if (!chunk.GetBlock(x + 1, y, z).IsCovered(Direction.west, chunk, x + 1, y, z))
-        //if (GetBlockByRotation(chunk, x, y, z, Direction.east))
         {
-            //meshData = FaceDataEast(chunk, x, y, z, meshData);
-         //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.east); 
-            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, GetInvertedDirection(Direction.east)));
+            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, ReturnDirectionBasedOnRotation(GetInvertedDirection(Direction.east)));
         }
 
         if (!chunk.GetBlock(x - 1, y, z).IsCovered(Direction.east, chunk, x - 1, y, z))
-        //if (GetBlockByRotation(chunk, x, y, z, Direction.west))
         {
-            //meshData = FaceDataWest(chunk, x, y, z, meshData);
-         //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.west); 
-            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, GetInvertedDirection(Direction.west)));
+            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, ReturnDirectionBasedOnRotation(GetInvertedDirection(Direction.west)));
         }
 
         CollisionBlockdata(chunk, x, y, z, meshData);
 
         return meshData;
     }
-
-    /*
-    public bool GetBlockByRotation(Chunk chunk, int x, int y, int z, Direction direction)
-    {
-        Direction currentDirection = direction;
-        bool result = true;
-
-
-        for(int ix = 0; ix < 4; ix++)
-        {
-            for (int iy = 0; iy < 4; ix++)
-            {
-                for (int iz = 0; iz < 4; ix++)
-                {
-                    if(blockRotation.x == ix * 90)
-                    {
-
-                    }
-                    if(blockRotation.y == iy * 90)
-                    {
-
-                    }
-                    if(blockRotation.z == iz * 90)
-                    {
-
-                    }
-                }
-            }
-        }
-
-        //THIS COULD BE A LOOP
-        if(blockRotation.x == 0)
-        {
-            if(blockRotation.y == 0)
-            {
-                if(blockRotation.z == 0)
-                {
-
-                }
-                if(blockRotation.z == 90)
-                {
-
-                }
-                if(blockRotation.z == 180)
-                {
-
-                }
-                if(blockRotation.z == 270)
-                {
-
-                }
-            }
-            if(blockRotation.y == 90)
-            {
-
-            }
-        }
-
-
-        if (direction == Direction.north || direction == Direction.south || direction == Direction.up || direction == Direction.down)
-        {
-            if (blockRotation.x == 0)
-            {
-                switch (currentDirection)
-                {
-                    case Direction.north:
-                        result = !chunk.GetBlock(x, y, z + 1).IsCovered(Direction.south, chunk, x, y, z + 1); // North
-                        currentDirection = Direction.north;
-                        break;
-                    case Direction.south:
-                        result = !chunk.GetBlock(x, y, z - 1).IsCovered(Direction.north, chunk, x, y, z - 1); //south
-                        currentDirection = Direction.south;
-                        break;
-                    case Direction.up:
-                        result = !chunk.GetBlock(x, y + 1, z).IsCovered(Direction.down, chunk, x, y + 1, z); //up
-                        currentDirection = Direction.up;
-                        break;
-                    case Direction.down:
-                        result = !chunk.GetBlock(x, y - 1, z).IsCovered(Direction.up, chunk, x, y - 1, z); //down
-                        currentDirection = Direction.down;
-                        break;
-                }
-            }
-            if (blockRotation.x == 90)
-            {
-                switch (currentDirection)
-                {
-                    case Direction.north:
-                        result = !chunk.GetBlock(x, y - 1, z).IsCovered(Direction.up, chunk, x, y - 1, z); //down
-                        currentDirection = Direction.down;
-                        break;
-                    case Direction.south:
-                        result = !chunk.GetBlock(x, y + 1, z).IsCovered(Direction.down, chunk, x, y + 1, z); //up
-                        currentDirection = Direction.up;
-                        break;
-                    case Direction.up:
-                        result = !chunk.GetBlock(x, y, z + 1).IsCovered(Direction.south, chunk, x, y, z + 1); // North
-                        currentDirection = Direction.north;
-                        break;
-                    case Direction.down:
-                        result = !chunk.GetBlock(x, y, z - 1).IsCovered(Direction.north, chunk, x, y, z - 1); //south
-                        currentDirection = Direction.south;
-                        break;
-                }
-            }
-            if (blockRotation.x == 180)
-            {
-                switch (currentDirection)
-                {
-                    case Direction.north:
-                        result = !chunk.GetBlock(x, y, z - 1).IsCovered(Direction.north, chunk, x, y, z - 1); //south
-                        currentDirection = Direction.south;
-                        break;
-                    case Direction.south:
-                        result = !chunk.GetBlock(x, y, z + 1).IsCovered(Direction.south, chunk, x, y, z + 1); // North
-                        currentDirection = Direction.north;
-                        break;
-                    case Direction.up:
-                        result = !chunk.GetBlock(x, y - 1, z).IsCovered(Direction.up, chunk, x, y - 1, z); //down
-                        currentDirection = Direction.down;
-                        break;
-                    case Direction.down:
-                        result = !chunk.GetBlock(x, y + 1, z).IsCovered(Direction.down, chunk, x, y + 1, z); //up
-                        currentDirection = Direction.up;
-                        break;
-                }
-            }
-            if (blockRotation.x == 270)
-            {
-                switch (currentDirection)
-                {
-                    case Direction.north:
-                        result = !chunk.GetBlock(x, y + 1, z).IsCovered(Direction.down, chunk, x, y + 1, z); //up
-                        currentDirection = Direction.up;
-                        break;
-                    case Direction.south:
-                        result = !chunk.GetBlock(x, y - 1, z).IsCovered(Direction.up, chunk, x, y - 1, z); //down
-                        currentDirection = Direction.down;
-                        break;
-                    case Direction.up:
-                        result = !chunk.GetBlock(x, y, z - 1).IsCovered(Direction.north, chunk, x, y, z - 1); //south
-                        currentDirection = Direction.south;
-                        break;
-                    case Direction.down:
-                        result = !chunk.GetBlock(x, y, z + 1).IsCovered(Direction.south, chunk, x, y, z + 1); // North
-                        currentDirection = Direction.north;
-                        break;
-                }
-            }
-        }
-
-        if (direction == Direction.north || direction == Direction.south || direction == Direction.east || direction == Direction.west)
-        {
-            if (blockRotation.y == 0)
-            {
-                switch (currentDirection)
-                {
-                    case Direction.north:
-                        result = !chunk.GetBlock(x, y, z + 1).IsCovered(Direction.south, chunk, x, y, z + 1); // North
-                        currentDirection = Direction.north;
-                        break;
-                    case Direction.south:
-                        result = !chunk.GetBlock(x, y, z - 1).IsCovered(Direction.north, chunk, x, y, z - 1); //south
-                        currentDirection = Direction.south;
-                        break;
-                    case Direction.east:
-                        result = !chunk.GetBlock(x + 1, y, z).IsCovered(Direction.down, chunk, x + 1, y, z); //east
-                        currentDirection = Direction.east; 
-                        break;
-                    case Direction.west:
-                        result = !chunk.GetBlock(x - 1, y, z).IsCovered(Direction.up, chunk, x - 1, y, z); //west
-                        currentDirection = Direction.west;
-                        break;
-                }
-            }
-            if (blockRotation.y == 90)
-            {
-                switch (currentDirection)
-                {
-                    case Direction.north:
-                        result = !chunk.GetBlock(x - 1, y, z).IsCovered(Direction.up, chunk, x - 1, y, z); //west
-                        currentDirection = Direction.west;
-                        break;
-                    case Direction.south:
-                        result = !chunk.GetBlock(x + 1, y, z).IsCovered(Direction.down, chunk, x + 1, y, z); //east
-                        currentDirection = Direction.east;
-                        break;
-                    case Direction.east:
-                        result = !chunk.GetBlock(x, y, z + 1).IsCovered(Direction.south, chunk, x, y, z + 1); // North
-                        currentDirection = Direction.north;
-                        break;
-                    case Direction.west:
-                        result = !chunk.GetBlock(x, y, z - 1).IsCovered(Direction.north, chunk, x, y, z - 1); //south
-                        currentDirection = Direction.south;
-                        break;
-                }
-            }
-            if (blockRotation.y == 180)
-            {
-                switch (currentDirection)
-                {
-                    case Direction.north:
-                        result = !chunk.GetBlock(x, y, z - 1).IsCovered(Direction.north, chunk, x, y, z - 1); //south
-                        currentDirection = Direction.south;
-                        break;
-                    case Direction.south:
-                        result = !chunk.GetBlock(x, y, z + 1).IsCovered(Direction.south, chunk, x, y, z + 1); // North
-                        currentDirection = Direction.north;
-                        break;
-                    case Direction.east:
-                        result = !chunk.GetBlock(x - 1, y, z).IsCovered(Direction.up, chunk, x - 1, y, z); //west
-                        currentDirection = Direction.west;
-                        break;
-                    case Direction.west:
-                        result = !chunk.GetBlock(x + 1, y, z).IsCovered(Direction.down, chunk, x + 1, y, z); //east
-                        currentDirection = Direction.east;
-                        break;
-                }
-            }
-            if (blockRotation.y == 270)
-            {
-                switch (currentDirection)
-                {
-                    case Direction.north:
-                        result = !chunk.GetBlock(x + 1, y, z).IsCovered(Direction.down, chunk, x + 1, y, z); //east
-                        currentDirection = Direction.east;
-                        break;
-                    case Direction.south:
-                        result = !chunk.GetBlock(x - 1, y, z).IsCovered(Direction.up, chunk, x - 1, y, z); //west
-                        currentDirection = Direction.west;
-                        break;
-                    case Direction.east:
-                        result = !chunk.GetBlock(x, y, z - 1).IsCovered(Direction.north, chunk, x, y, z - 1); //south
-                        currentDirection = Direction.south;
-                        break;
-                    case Direction.west:
-                        result = !chunk.GetBlock(x, y, z + 1).IsCovered(Direction.south, chunk, x, y, z + 1); // North
-                        currentDirection = Direction.north;
-                        break;
-                }
-            }
-        }
-
-        if (direction == Direction.east || direction == Direction.west || direction == Direction.up || direction == Direction.down)
-        {
-            if (blockRotation.z == 0)
-            {
-                switch (currentDirection)
-                {
-                    case Direction.up:
-                        result = !chunk.GetBlock(x, y + 1, z).IsCovered(Direction.down, chunk, x, y + 1, z); //up
-                        currentDirection = Direction.up;
-                        break;
-                    case Direction.down:
-                        result = !chunk.GetBlock(x, y - 1, z).IsCovered(Direction.up, chunk, x, y - 1, z); //down
-                        currentDirection = Direction.down;
-                        break;
-                    case Direction.east:
-                        result = !chunk.GetBlock(x + 1, y, z).IsCovered(Direction.down, chunk, x + 1, y, z); //east
-                        currentDirection = Direction.east;
-                        break;
-                    case Direction.west:
-                        result = !chunk.GetBlock(x - 1, y, z).IsCovered(Direction.up, chunk, x - 1, y, z); //west
-                        currentDirection = Direction.west;
-                        break;
-                }
-            }
-            if (blockRotation.z == 90)
-            {
-                switch (currentDirection)
-                {
-                    case Direction.east:
-                        result = !chunk.GetBlock(x, y + 1, z).IsCovered(Direction.down, chunk, x, y + 1, z); //up
-                        currentDirection = Direction.up;
-                        break;
-                    case Direction.west:
-                        result = !chunk.GetBlock(x, y - 1, z).IsCovered(Direction.up, chunk, x, y - 1, z); //down
-                        currentDirection = Direction.down;
-                        break;
-                    case Direction.up:
-                        result = !chunk.GetBlock(x - 1, y, z).IsCovered(Direction.up, chunk, x - 1, y, z); //west
-                        currentDirection = Direction.west;
-                        break;
-                    case Direction.down:
-                        result = !chunk.GetBlock(x + 1, y, z).IsCovered(Direction.down, chunk, x + 1, y, z); //east
-                        currentDirection = Direction.east;
-                        break;
-                }
-            }
-            if (blockRotation.z == 180)
-            {
-                switch (currentDirection)
-                {
-                    case Direction.east:
-                        result = !chunk.GetBlock(x - 1, y, z).IsCovered(Direction.up, chunk, x - 1, y, z); //west
-                        currentDirection = Direction.west;
-                        break;
-                    case Direction.west:
-                        result = !chunk.GetBlock(x + 1, y, z).IsCovered(Direction.down, chunk, x + 1, y, z); //east
-                        currentDirection = Direction.east;
-                        break;
-                    case Direction.up:
-                        result = !chunk.GetBlock(x, y - 1, z).IsCovered(Direction.up, chunk, x, y - 1, z); //down
-                        currentDirection = Direction.down;
-                        break;
-                    case Direction.down:
-                        result = !chunk.GetBlock(x, y + 1, z).IsCovered(Direction.down, chunk, x, y + 1, z); //up
-                        currentDirection = Direction.up;
-                        break;
-                }
-            }
-            if (blockRotation.z == 270)
-            {
-                switch (currentDirection)
-                {
-                    case Direction.east:
-                        result = !chunk.GetBlock(x, y - 1, z).IsCovered(Direction.up, chunk, x, y - 1, z); //down
-                        currentDirection = Direction.down;
-                        break;
-                    case Direction.west:
-                        result = !chunk.GetBlock(x, y + 1, z).IsCovered(Direction.down, chunk, x, y + 1, z); //up
-                        currentDirection = Direction.up;
-                        break;
-                    case Direction.up:
-                        result = !chunk.GetBlock(x + 1, y, z).IsCovered(Direction.down, chunk, x + 1, y, z); //east
-                        currentDirection = Direction.east;
-                        break;
-                    case Direction.down:
-                        result = !chunk.GetBlock(x - 1, y, z).IsCovered(Direction.up, chunk, x - 1, y, z); //west
-                        currentDirection = Direction.west;
-                        break;
-                }
-            }
-        }
-
-        return result;
-    }
-    */
 
     /// <summary>
     /// Returns true if block is completely covered on all six sides, otherwise, returns the appropiate bool value for the asked face solidity
@@ -578,7 +229,6 @@ public class Block
         }
         else
         {
-            //return GetSolidity(direction);
             return CheckSolidityWithRotation(direction);
         }
     }
@@ -590,371 +240,7 @@ public class Block
     /// <returns></returns>
     public virtual bool CheckSolidityWithRotation(Direction direction)
     {
-
-        return GetSolidity(CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, direction));
-
-        /*
-        Direction currentDirection = direction;
-        bool result = GetSolidity(currentDirection);
-
-        //if (direction == Direction.north || direction == Direction.south || direction == Direction.up || direction == Direction.down)
-        //{
-        if (blockRotation.z == 0)
-        {
-            result = GetSolidity(currentDirection);
-        }
-        if (blockRotation.z == 90)
-        {
-            switch (currentDirection)
-            {
-                case Direction.east:
-                    result = GetSolidity(Direction.down);
-                    currentDirection = Direction.down;
-                    break;
-                case Direction.west:
-                    result = GetSolidity(Direction.up);
-                    currentDirection = Direction.up;
-                    break;
-                case Direction.up:
-                    result = GetSolidity(Direction.east);
-                    currentDirection = Direction.east;
-                    break;
-                case Direction.down:
-                    result = GetSolidity(Direction.west);
-                    currentDirection = Direction.west;
-                    break;
-                case Direction.north:
-                    result = GetSolidity(Direction.north);
-                    currentDirection = Direction.north;
-                    break;
-                case Direction.south:
-                    result = GetSolidity(Direction.south);
-                    currentDirection = Direction.south;
-                    break;
-                default:
-                    result = GetSolidity(currentDirection);
-                    break;
-            }
-        }
-        if (blockRotation.z == 180)
-        {
-            switch (currentDirection)
-            {
-                case Direction.east:
-                    result = GetSolidity(Direction.west);
-                    currentDirection = Direction.west;
-                    break;
-                case Direction.west:
-                    result = GetSolidity(Direction.east);
-                    currentDirection = Direction.east;
-                    break;
-                case Direction.up:
-                    result = GetSolidity(Direction.down);
-                    currentDirection = Direction.down;
-                    break;
-                case Direction.down:
-                    result = GetSolidity(Direction.up);
-                    currentDirection = Direction.up;
-                    break;
-                case Direction.north:
-                    result = GetSolidity(Direction.north);
-                    currentDirection = Direction.north;
-                    break;
-                case Direction.south:
-                    result = GetSolidity(Direction.south);
-                    currentDirection = Direction.south;
-                    break;
-                default:
-                    result = GetSolidity(currentDirection);
-                    break;
-            }
-        }
-        if (blockRotation.z == 270)
-        {
-            switch (currentDirection)
-            {
-                case Direction.east:
-                    result = GetSolidity(Direction.up);
-                    currentDirection = Direction.up;
-                    break;
-                case Direction.west:
-                    result = GetSolidity(Direction.down);
-                    currentDirection = Direction.down;
-                    break;
-                case Direction.up:
-                    result = GetSolidity(Direction.west);
-                    currentDirection = Direction.west;
-                    break;
-                case Direction.down:
-                    result = GetSolidity(Direction.east);
-                    currentDirection = Direction.east;
-                    break;
-                case Direction.north:
-                    result = GetSolidity(Direction.north);
-                    currentDirection = Direction.north;
-                    break;
-                case Direction.south:
-                    result = GetSolidity(Direction.south);
-                    currentDirection = Direction.south;
-                    break;
-                default:
-                    result = GetSolidity(currentDirection);
-                    break;
-            }
-        }
-
-        if (blockRotation.x == 0)
-        {
-            result = GetSolidity(currentDirection);
-        }
-        if (blockRotation.x == 90)
-        {
-            switch (currentDirection)
-            {
-                case Direction.north:
-                    result = GetSolidity(Direction.up);
-                    currentDirection = Direction.up;
-                    break;
-                case Direction.south:
-                    result = GetSolidity(Direction.down);
-                    currentDirection = Direction.down;
-                    break;
-                case Direction.up:
-                    result = GetSolidity(Direction.south);
-                    currentDirection = Direction.south;
-                    break;
-                case Direction.down:
-                    result = GetSolidity(Direction.north);
-                    currentDirection = Direction.north;
-                    break;
-                case Direction.east:
-                    result = GetSolidity(Direction.east);
-                    currentDirection = Direction.east;
-                    break;
-                case Direction.west:
-                    result = GetSolidity(Direction.west);
-                    currentDirection = Direction.west;
-                    break;
-                default:
-                    result = GetSolidity(currentDirection);
-                    break;
-            }
-        }
-        if (blockRotation.x == 180)
-        {
-            switch (currentDirection)
-            {
-                case Direction.north:
-                    result = GetSolidity(Direction.south);
-                    currentDirection = Direction.south;
-                    break;
-                case Direction.south:
-                    result = GetSolidity(Direction.north);
-                    currentDirection = Direction.north;
-                    break;
-                case Direction.up:
-                    result = GetSolidity(Direction.down);
-                    currentDirection = Direction.down;
-                    break;
-                case Direction.down:
-                    result = GetSolidity(Direction.up);
-                    currentDirection = Direction.up;
-                    break;
-                case Direction.east:
-                    result = GetSolidity(Direction.east);
-                    currentDirection = Direction.east;
-                    break;
-                case Direction.west:
-                    result = GetSolidity(Direction.west);
-                    currentDirection = Direction.west;
-                    break;
-                default:
-                    result = GetSolidity(currentDirection);
-                    break;
-            }
-        }
-        if (blockRotation.x == 270)
-        {
-            switch (currentDirection)
-            {
-                case Direction.north:
-                    result = GetSolidity(Direction.down);
-                    currentDirection = Direction.down;
-                    break;
-                case Direction.south:
-                    result = GetSolidity(Direction.up);
-                    currentDirection = Direction.up;
-                    break;
-                case Direction.up:
-                    result = GetSolidity(Direction.north);
-                    currentDirection = Direction.north;
-                    break;
-                case Direction.down:
-                    result = GetSolidity(Direction.south);
-                    currentDirection = Direction.south;
-                    break;
-                case Direction.east:
-                    result = GetSolidity(Direction.east);
-                    currentDirection = Direction.east;
-                    break;
-                case Direction.west:
-                    result = GetSolidity(Direction.west);
-                    currentDirection = Direction.west;
-                    break;
-                default:
-                    result = GetSolidity(currentDirection);
-                    break;
-            }
-        }
-
-
-        //}
-
-        //if (direction == Direction.north || direction == Direction.south || direction == Direction.east || direction == Direction.west)
-        //{
-        if (blockRotation.y == 0)
-        {
-            result = GetSolidity(currentDirection);
-        }
-        if (blockRotation.y == 90)
-        {
-            switch (currentDirection)
-            {
-                case Direction.north:
-                    result = GetSolidity(Direction.west);
-                    currentDirection = Direction.west;
-                    break;
-                case Direction.south:
-                    result = GetSolidity(Direction.east);
-                    currentDirection = Direction.east;
-                    break;
-                case Direction.east:
-                    result = GetSolidity(Direction.north);
-                    currentDirection = Direction.north;
-                    break;
-                case Direction.west:
-                    result = GetSolidity(Direction.south);
-                    currentDirection = Direction.south;
-                    break;
-                case Direction.up:
-                    result = GetSolidity(Direction.up);
-                    currentDirection = Direction.up;
-                    break;
-                case Direction.down:
-                    result = GetSolidity(Direction.down);
-                    currentDirection = Direction.down;
-                    break;
-                default:
-                    result = GetSolidity(currentDirection);
-                    break;
-            }
-        }
-        if (blockRotation.y == 180)
-        {
-            switch (currentDirection)
-            {
-                case Direction.north:
-                    result = GetSolidity(Direction.south);
-                    currentDirection = Direction.south;
-                    break;
-                case Direction.south:
-                    result = GetSolidity(Direction.north);
-                    currentDirection = Direction.north;
-                    break;
-                case Direction.east:
-                    result = GetSolidity(Direction.west);
-                    currentDirection = Direction.west;
-                    break;
-                case Direction.west:
-                    result = GetSolidity(Direction.east);
-                    currentDirection = Direction.east;
-                    break;
-                case Direction.up:
-                    result = GetSolidity(Direction.up);
-                    currentDirection = Direction.up;
-                    break;
-                case Direction.down:
-                    result = GetSolidity(Direction.down);
-                    currentDirection = Direction.down;
-                    break;
-                default:
-                    result = GetSolidity(currentDirection);
-                    break;
-            }
-        }
-        if (blockRotation.y == 270)
-        {
-            switch (currentDirection)
-            {
-                case Direction.north:
-                    result = GetSolidity(Direction.east);
-                    currentDirection = Direction.east;
-                    break;
-                case Direction.south:
-                    result = GetSolidity(Direction.west);
-                    currentDirection = Direction.west;
-                    break;
-                case Direction.east:
-                    result = GetSolidity(Direction.south);
-                    currentDirection = Direction.south;
-                    break;
-                case Direction.west:
-                    result = GetSolidity(Direction.north);
-                    currentDirection = Direction.north;
-                    break;
-                case Direction.up:
-                    result = GetSolidity(Direction.up);
-                    currentDirection = Direction.up;
-                    break;
-                case Direction.down:
-                    result = GetSolidity(Direction.down);
-                    currentDirection = Direction.down;
-                    break;
-                default:
-                    result = GetSolidity(currentDirection);
-                    break;
-            }
-        }
-        //}
-
-        //if (direction == Direction.east || direction == Direction.west || direction == Direction.up || direction == Direction.down)
-        //{
-
-        //}
-
-        if (debugIsTrue)
-        {
-            Debug.Log("SOLIDITY: the direction " + currentDirection + " is " + GetSolidity(currentDirection));
-            /*
-            switch (currentDirection)
-            {
-                case Direction.north:
-                    result = GetSolidity(Direction.south);
-                    break;
-                case Direction.south:
-                    result = GetSolidity(Direction.north);
-                    break;
-                case Direction.east:
-                    result = GetSolidity(Direction.west);
-                    break;
-                case Direction.west:
-                    result = GetSolidity(Direction.east);
-                    break;
-                case Direction.up:
-                    result = GetSolidity(Direction.down);
-                    break;
-                case Direction.down:
-                    result = GetSolidity(Direction.up);
-                    break;
-            }
-            
-
-        }
-
-
-        return result;
-
-        */
+        return GetSolidity(ReturnDirectionBasedOnRotation(direction));
     }
 
     /// <summary>
@@ -996,342 +282,9 @@ public class Block
     /// <returns></returns>
     public MeshData GetMeshDataFromRotation(Chunk chunk, int x, int y, int z, MeshData meshData, Direction direction)
     {
-
-        meshData = GetMeshData(chunk, x, y, z, meshData, CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z, direction));
-
-        return meshData;
-
-
-        /*
-        Direction currentDirection = direction;
-        //MeshData result;
-
-        if (Input.GetKey(KeyCode.Space))
-            Debug.Log(currentDirection);
-
-        //if (direction == Direction.north || direction == Direction.south || direction == Direction.up || direction == Direction.down)
-        //{
-        if (blockRotation.z == 0)
-        {
-            //meshData = GetMeshData(chunk,x,y,z,meshData,currentDirection);
-        }
-        if (blockRotation.z == 90)
-        {
-            switch (currentDirection)
-            {
-                case Direction.east:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.up);
-                    currentDirection = Direction.down;
-                    break;
-                case Direction.west:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.down);
-                    currentDirection = Direction.up;
-                    break;
-                case Direction.up:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.west);
-                    currentDirection = Direction.east;
-                    break;
-                case Direction.down:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.east);
-                    currentDirection = Direction.west;
-                    break;
-                case Direction.north:
-                    currentDirection = Direction.north;
-                    break;
-                case Direction.south:
-                    currentDirection = Direction.south;
-                    break;
-                default:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,currentDirection);
-                    break;
-            }
-        }
-        if (blockRotation.z == 180)
-        {
-            switch (currentDirection)
-            {
-                case Direction.east:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.west);
-                    currentDirection = Direction.west;
-                    break;
-                case Direction.west:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.east);
-                    currentDirection = Direction.east;
-                    break;
-                case Direction.up:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.down);
-                    currentDirection = Direction.down;
-                    break;
-                case Direction.down:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.up);
-                    currentDirection = Direction.up;
-                    break;
-                case Direction.north:
-                    currentDirection = Direction.north;
-                    break;
-                case Direction.south:
-                    currentDirection = Direction.south;
-                    break;
-                default:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,currentDirection);
-                    break;
-            }
-        }
-        if (blockRotation.z == 270)
-        {
-            switch (currentDirection)
-            {
-                case Direction.east:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.down);
-                    currentDirection = Direction.up;
-                    break;
-                case Direction.west:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.up);
-                    currentDirection = Direction.down;
-                    break;
-                case Direction.up:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.east);
-                    currentDirection = Direction.west;
-                    break;
-                case Direction.down:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.west);
-                    currentDirection = Direction.east;
-                    break;
-                case Direction.north:
-                    currentDirection = Direction.north;
-                    break;
-                case Direction.south:
-                    currentDirection = Direction.south;
-                    break;
-                default:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,currentDirection);
-                    break;
-            }
-        }
-
-        if (blockRotation.x == 0)
-        {
-            //meshData = GetMeshData(chunk,x,y,z,meshData,currentDirection);
-        }
-        if (blockRotation.x == 90)
-        {
-            switch (currentDirection)
-            {
-                case Direction.north:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.down);
-                    currentDirection = Direction.up;
-                    break;
-                case Direction.south:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.up);
-                    currentDirection = Direction.down;
-                    break;
-                case Direction.up:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.north);
-                    currentDirection = Direction.south;
-                    break;
-                case Direction.down:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.south);
-                    currentDirection = Direction.north;
-                    break;
-                case Direction.east:
-                    currentDirection = Direction.east;
-                    break;
-                case Direction.west:
-                    currentDirection = Direction.west;
-                    break;
-                default:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,currentDirection);
-                    break;
-            }
-        }
-        if (blockRotation.x == 180)
-        {
-            switch (currentDirection)
-            {
-                case Direction.north:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.south);
-                    currentDirection = Direction.south;
-                    break;
-                case Direction.south:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.north);
-                    currentDirection = Direction.north;
-                    break;
-                case Direction.up:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.down);
-                    currentDirection = Direction.down;
-                    break;
-                case Direction.down:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.up);
-                    currentDirection = Direction.up;
-                    break;
-                case Direction.east:
-                    currentDirection = Direction.east;
-                    break;
-                case Direction.west:
-                    currentDirection = Direction.west;
-                    break;
-                default:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,currentDirection);
-                    break;
-            }
-        }
-        if (blockRotation.x == 270)
-        {
-            switch (currentDirection)
-            {
-                case Direction.north:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.up);
-                    currentDirection = Direction.down;
-                    break;
-                case Direction.south:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.down);
-                    currentDirection = Direction.up;
-                    break;
-                case Direction.up:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.south);
-                    currentDirection = Direction.north;
-                    break;
-                case Direction.down:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.north);
-                    currentDirection = Direction.south;
-                    break;
-                case Direction.east:
-                    currentDirection = Direction.east;
-                    break;
-                case Direction.west:
-                    currentDirection = Direction.west;
-                    break;
-                default:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,currentDirection);
-                    break;
-            }
-        }
-        //}
-        if (Input.GetKey(KeyCode.Space))
-            Debug.Log(currentDirection);
-        //if (direction == Direction.north || direction == Direction.south || direction == Direction.east || direction == Direction.west)
-        //{
-
-        if (blockRotation.y == 0)
-        {
-            //meshData = GetMeshData(chunk,x,y,z,meshData,currentDirection);
-        }
-        if (blockRotation.y == 90)
-        {
-            switch (currentDirection)
-            {
-                case Direction.north:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.west);
-                    currentDirection = Direction.west;
-                    break;
-                case Direction.south:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.east);
-                    currentDirection = Direction.east;
-                    break;
-                case Direction.east:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.north);
-                    currentDirection = Direction.north;
-                    break;
-                case Direction.west:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.south);
-                    currentDirection = Direction.south;
-                    break;
-                case Direction.up:
-                    currentDirection = Direction.up;
-                    break;
-                case Direction.down:
-                    currentDirection = Direction.down;
-                    break;
-                default:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,currentDirection);
-                    break;
-            }
-        }
-        if (blockRotation.y == 180)
-        {
-            switch (currentDirection)
-            {
-                case Direction.north:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.south);
-                    currentDirection = Direction.south;
-                    break;
-                case Direction.south:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.north);
-                    currentDirection = Direction.north;
-                    break;
-                case Direction.east:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.west);
-                    currentDirection = Direction.west;
-                    break;
-                case Direction.west:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.east);
-                    currentDirection = Direction.east;
-                    break;
-                case Direction.up:
-                    currentDirection = Direction.up;
-                    break;
-                case Direction.down:
-                    currentDirection = Direction.down;
-                    break;
-                default:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,currentDirection);
-                    break;
-            }
-        }
-        if (blockRotation.y == 270)
-        {
-            switch (currentDirection)
-            {
-                case Direction.north:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.east);
-                    currentDirection = Direction.east;
-                    break;
-                case Direction.south:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.west);
-                    currentDirection = Direction.west;
-                    break;
-                case Direction.east:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.south);
-                    currentDirection = Direction.south;
-                    break;
-                case Direction.west:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,Direction.north);
-                    currentDirection = Direction.north;
-                    break;
-                case Direction.up:
-                    currentDirection = Direction.up;
-                    break;
-                case Direction.down:
-                    currentDirection = Direction.down;
-                    break;
-                default:
-                    //meshData = GetMeshData(chunk,x,y,z,meshData,currentDirection);
-                    break;
-            }
-        }
-        //}
-        if (Input.GetKey(KeyCode.Space))
-            Debug.Log(currentDirection);
-        //if (direction == Direction.east || direction == Direction.west || direction == Direction.up || direction == Direction.down)
-        //{
-
-
-
-        //}
-        if (Input.GetKey(KeyCode.Space))
-            Debug.Log(currentDirection);
-
-        if (debugIsTrue)
-        {
-            Debug.Log("MESH DATA: the direction " + direction + " has returned " + currentDirection);
-
-           
-        }
-        meshData = GetMeshData(chunk, x, y, z, meshData, currentDirection);
+        meshData = GetMeshData(chunk, x, y, z, meshData, ReturnDirectionBasedOnRotation(direction));
 
         return meshData;
-
-        */
     }
 
     MeshData GetMeshData(Chunk chunk, int x, int y, int z, MeshData meshData, Direction direction)
@@ -1360,21 +313,9 @@ public class Block
 
         return meshData;
     }
-    /*
-    Vector3 RotateVectorSequencially(int x, int y, int z, Vector3 targetVector)
-    {
-        Vector3 zRotation = new Vector3(0, 0, blockRotation.z);
-        Vector3 xRotation = new Vector3(0, blockRotation.x, 0);
-        Vector3 yRotation = new Vector3(blockRotation.y, 0, 0);
 
-        targetVector = Quaternion.Euler(zRotation) * (targetVector - new Vector3(x, y, z)) + new Vector3(x, y, z);
-        targetVector = Quaternion.Euler(xRotation) * (targetVector - new Vector3(x, y, z)) + new Vector3(x, y, z);
-        targetVector = Quaternion.Euler(yRotation) * (targetVector - new Vector3(x, y, z)) + new Vector3(x, y, z);
-
-    }
-    */
     protected virtual MeshData FaceDataUp
-         (Chunk chunk, int x, int y, int z, MeshData meshData)
+        (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
 
         meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y + 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
@@ -1390,7 +331,7 @@ public class Block
     }
 
     protected virtual MeshData FaceDataDown
-         (Chunk chunk, float x, float y, float z, MeshData meshData)
+         (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
         meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
         meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
@@ -1405,7 +346,7 @@ public class Block
     }
 
     protected virtual MeshData FaceDataNorth
-        (Chunk chunk, float x, float y, float z, MeshData meshData)
+        (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
 
         meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
@@ -1421,7 +362,7 @@ public class Block
     }
 
     protected virtual MeshData FaceDataEast
-        (Chunk chunk, float x, float y, float z, MeshData meshData)
+        (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
 
         meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
@@ -1437,7 +378,7 @@ public class Block
     }
 
     protected virtual MeshData FaceDataSouth
-        (Chunk chunk, float x, float y, float z, MeshData meshData)
+        (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
 
         meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
@@ -1453,7 +394,7 @@ public class Block
     }
 
     protected virtual MeshData FaceDataWest
-        (Chunk chunk, float x, float y, float z, MeshData meshData)
+        (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
 
         meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
@@ -1468,8 +409,8 @@ public class Block
         return meshData;
     }
 
-        //Returns index of rotation
-    int RotateSides(int x, int y, int z, int oDir, int[] sideArray)
+    //Returns index of rotation
+    protected int RotateSides(int x, int y, int z, int oDir)
     {
         if (z != 0)
         {
@@ -1481,25 +422,25 @@ public class Block
                 switch (oDir)
                 {
                     case 2:
-                        oDir = 5; //Down
-                        break;
+                        return  5; //Down
+                        
                     case 3:
-                        oDir = 4; //Up
-                        break;
+                        return  4; //Up
+                        
                     case 4:
-                        oDir = 2; //East
-                        break;
+                        return  2; //East
+                        
                     case 5:
-                        oDir = 3; //West
-                        break;
+                        return  3; //West
+                        
                     case 0:
-                        oDir = 0; //North
-                        break;
+                        return  0; //North
+                        
                     case 1:
-                        oDir = 1; //South
-                        break;
-                    default:
-                        break;
+                        return  1; //South
+                        
+                    
+                        
                 }
             }
             if (z == 180)
@@ -1507,25 +448,25 @@ public class Block
                 switch (oDir)
                 {
                     case 2:
-                        oDir = 3; //West
-                        break;
+                        return  3; //West
+                        
                     case 3:
-                        oDir = 2; //East
-                        break;
+                        return  2; //East
+                        
                     case 4:
-                        oDir = 5; //Down
-                        break;
+                        return  5; //Down
+                        
                     case 5:
-                        oDir = 4; //Up
-                        break;
+                        return  4; //Up
+                        
                     case 0:
-                        oDir = 0; //North
-                        break;
+                        return  0; //North
+                        
                     case 1:
-                        oDir = 1; //South
-                        break;
-                    default:
-                        break;
+                        return  1; //South
+                        
+                    
+                        
                 }
             }
             if (z == 270)
@@ -1533,25 +474,25 @@ public class Block
                 switch (oDir)
                 {
                     case 2:
-                        oDir = 4; //Up
-                        break;
+                        return  4; //Up
+                        
                     case 3:
-                        oDir = 5; //Down
-                        break;
+                        return  5; //Down
+                        
                     case 4:
-                        oDir = 3; //West
-                        break;
+                        return  3; //West
+                        
                     case 5:
-                        oDir = 2; //East
-                        break;
+                        return  2; //East
+                        
                     case 0:
-                        oDir = 0; //North
-                        break;
+                        return  0; //North
+                        
                     case 1:
-                        oDir = 1; //South
-                        break;
-                    default:
-                        break;
+                        return  1; //South
+                        
+                    
+                        
                 }
             }
         }
@@ -1566,25 +507,25 @@ public class Block
                 switch (oDir)
                 {
                     case 0:
-                        oDir = 4; //Up
-                        break;
+                        return  4; //Up
+                        
                     case 1:
-                        oDir = 5; //Down
-                        break;
+                        return  5; //Down
+                        
                     case 4:
-                        oDir = 1; //South
-                        break;
+                        return  1; //South
+                        
                     case 5:
-                        oDir = 0; //North
-                        break;
+                        return  0; //North
+                        
                     case 2:
-                        oDir = 2; //East
-                        break;
+                        return  2; //East
+                        
                     case 3:
-                        oDir = 3; //West
-                        break;
-                    default:
-                        break;
+                        return  3; //West
+                        
+                    
+                        
                 }
             }
             if (x == 180)
@@ -1592,25 +533,25 @@ public class Block
                 switch (oDir)
                 {
                     case 0:
-                        oDir = 1; //South
-                        break;
+                        return  1; //South
+                        
                     case 1:
-                        oDir = 0; //North
-                        break;
+                        return  0; //North
+                        
                     case 4:
-                        oDir = 5; //Down
-                        break;
+                        return  5; //Down
+                        
                     case 5:
-                        oDir = 4; //Up
-                        break;
+                        return  4; //Up
+                        
                     case 2:
-                        oDir = 2; //East
-                        break;
+                        return  2; //East
+                        
                     case 3:
-                        oDir = 3; //West
-                        break;
-                    default:
-                        break;
+                        return  3; //West
+                        
+                    
+                        
                 }
             }
             if (x == 270)
@@ -1618,25 +559,25 @@ public class Block
                 switch (oDir)
                 {
                     case 0:
-                        oDir = 5; //Down
-                        break;
+                        return  5; //Down
+                        
                     case 1:
-                        oDir = 4; //Up
-                        break;
+                        return  4; //Up
+                        
                     case 4:
-                        oDir = 0; //North
-                        break;
+                        return  0; //North
+                        
                     case 5:
-                        oDir = 1; //South
-                        break;
+                        return  1; //South
+                        
                     case 2:
-                        oDir = 2; //East
-                        break;
+                        return  2; //East
+                        
                     case 3:
-                        oDir = 3; //West
-                        break;
-                    default:
-                        break;
+                        return  3; //West
+                        
+                    
+                        
                 }
             }
 
@@ -1653,25 +594,25 @@ public class Block
                 switch (oDir)
                 {
                     case 0:
-                        oDir = 3; //West
-                        break;
+                        return  3; //West
+                        
                     case 1:
-                        oDir = 2; //East
-                        break;
+                        return  2; //East
+                        
                     case 2:
-                        oDir = 0; //North
-                        break;
+                        return  0; //North
+                        
                     case 3:
-                        oDir = 1; //South
-                        break;
+                        return  1; //South
+                        
                     case 4:
-                        oDir = 4; //Up
-                        break;
+                        return  4; //Up
+                        
                     case 5:
-                        oDir = 5; //Down
-                        break;
-                    default:
-                        break;
+                        return  5; //Down
+                        
+                    
+                        
                 }
             }
             if (y == 180)
@@ -1679,25 +620,23 @@ public class Block
                 switch (oDir)
                 {
                     case 0:
-                        oDir = 1; //South
-                        break;
+                        return  1; //South
+                        
                     case 1:
-                        oDir = 0; //North
-                        break;
+                        return  0; //North
+                        
                     case 2:
-                        oDir = 3; //West
-                        break;
+                        return  3; //West
+                        
                     case 3:
-                        oDir = 2; //East
-                        break;
+                        return  2; //East
+                        
                     case 4:
-                        oDir = 4; //Up
-                        break;
+                        return  4; //Up
+                        
                     case 5:
-                        oDir = 5; //Down
-                        break;
-                    default:
-                        break;
+                        return  5; //Down
+                        
                 }
             }
             if (y == 270)
@@ -1705,25 +644,23 @@ public class Block
                 switch (oDir)
                 {
                     case 0:
-                        oDir = 2; //East
-                        break;
+                        return  2; //East
+                        
                     case 1:
-                        oDir = 3; //West
-                        break;
+                        return  3; //West
+                        
                     case 2:
-                        oDir = 1; //South
-                        break;
+                        return  1; //South
+                        
                     case 3:
-                        oDir = 0; //North
-                        break;
+                        return  0; //North
+                        
                     case 4:
-                        oDir = 4; //Up
-                        break;
+                        return  4; //Up
+                        
                     case 5:
-                        oDir = 5; //Down
-                        break;
-                    default:
-                        break;
+                        return  5; //Down
+                        
                 }
             }
         }
@@ -1732,99 +669,7 @@ public class Block
         return oDir;
     }
 
-    Direction CalculateDirectionBasedOnRotation(int x, int y, int z, Direction startDirection)
-    {
-        int startDirectionNumber;
-
-        switch (startDirection)
-        {
-            case Direction.north:
-                startDirectionNumber = 0;
-                break;
-            case Direction.south:
-                startDirectionNumber = 1;
-                break;
-            case Direction.east:
-                startDirectionNumber = 2;
-                break;
-            case Direction.west:
-                startDirectionNumber = 3;
-                break;
-            case Direction.up:
-                startDirectionNumber = 4;
-                break;
-            case Direction.down:
-                startDirectionNumber = 5;
-                break;
-            default:
-                startDirectionNumber = 0;
-                break;
-        }
-
-        int[] sides = new int[6];
-
-        //assigns sides accordingly
-        for (int i = 0; i < sides.Length; i++)
-        {
-            sides[i] = i;
-        }
-
-        //Z Rotation
-        int[] sidesZ = new int[6];
-        for (int i = 0; i < sides.Length; i++)
-        {
-            sidesZ[i] = sides[RotateSides(0, 0, z, i, sides)];
-        }
-        for (int i = 0; i < sides.Length; i++)
-        {
-            sides[i] = sidesZ[i];
-        }
-
-
-        //X Rotation
-        int[] sidesX = new int[6];
-        for (int i = 0; i < sides.Length; i++)
-        {
-            sidesX[i] = sides[RotateSides(x, 0, 0, i, sides)];
-        }
-        for (int i = 0; i < sides.Length; i++)
-        {
-            sides[i] = sidesX[i];
-        }
-
-        //Y Rotation
-        int[] sidesY = new int[6];
-        for (int i = 0; i < sides.Length; i++)
-        {
-            sidesY[i] = sides[RotateSides(0, y, 0, i, sides)];
-        }
-        for (int i = 0; i < sides.Length; i++)
-        {
-            sides[i] = sidesY[i];
-        }
-
-        switch (sides[startDirectionNumber])
-        {
-            case 0:
-                return Direction.north;
-            case 1:
-                return Direction.south;
-            case 2:
-                return Direction.east;
-            case 3:
-                return Direction.west;
-            case 4:
-                return Direction.up;
-            case 5:
-                return Direction.down;
-            default:
-                return startDirection;
-        }
-    }
-
-
-
-
+   
     #endregion
 
     #region ColliderData
@@ -2027,4 +872,71 @@ public class Block
 
     #endregion
 
+    protected Direction ReturnDirectionBasedOnRotation(Direction startDirection)
+    {
+        return GetDirectionByNumber(sides[GetNumberByDirection(startDirection)]);
+    }
+
+    protected void CalculateDirectionBasedOnRotation(int x, int y, int z)//, Direction startDirection)
+    {
+        //int startDirectionNumber;
+
+        //startDirectionNumber = GetNumberByDirection(startDirection);
+
+        sides = new int[6];
+
+        //assigns sides accordingly
+        for (int i = 0; i < sides.Length; i++)
+        {
+            sides[i] = i;
+        }
+
+        //Z Rotation
+        if (z != 0)
+        {
+            int[] sidesZ = new int[6];
+            for (int i = 0; i < sides.Length; i++)
+            {
+                sidesZ[i] = sides[RotateSides(0, 0, z, i)];
+            }
+            for (int i = 0; i < sides.Length; i++)
+            {
+                sides[i] = sidesZ[i];
+            }
+        }
+
+
+
+        //X Rotation
+        if (x != 0)
+        {
+            int[] sidesX = new int[6];
+            for (int i = 0; i < sides.Length; i++)
+            {
+                sidesX[i] = sides[RotateSides(x, 0, 0, i)];
+            }
+            for (int i = 0; i < sides.Length; i++)
+            {
+                sides[i] = sidesX[i];
+            }
+        }
+
+        //Y Rotation
+        if (y != 0)
+        {
+            int[] sidesY = new int[6];
+            for (int i = 0; i < sides.Length; i++)
+            {
+                sidesY[i] = sides[RotateSides(0, y, 0, i)];
+            }
+            for (int i = 0; i < sides.Length; i++)
+            {
+                sides[i] = sidesY[i];
+            }
+        }
+
+        //return GetDirectionByNumber(sides[startDirectionNumber]);
+
+    }
+    
 }

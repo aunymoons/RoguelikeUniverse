@@ -11,128 +11,92 @@ public class BlockPyramid : Block
     public BlockPyramid(Vector3 blockRotation, Color color)
          : base(blockRotation, color)
     {
+        pieces = new bool[1];
     }
-
-    // Use this for initialization
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
+    
     public override MeshData Blockdata
     (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
-        if (
-            !chunk.GetBlock(x, y + 1, z).IsCovered(Direction.down, chunk, x, y + 1, z) ||
-            !chunk.GetBlock(x, y, z - 1).IsCovered(Direction.north, chunk, x, y, z - 1) ||
-            !chunk.GetBlock(x, y, z + 1).IsCovered(Direction.south, chunk, x, y, z + 1) ||
-            !chunk.GetBlock(x - 1, y, z).IsCovered(Direction.east, chunk, x - 1, y, z) ||
-            !chunk.GetBlock(x + 1, y, z).IsCovered(Direction.west, chunk, x + 1, y, z)
-        )
-        {
-            meshData = FaceDataUp(chunk, x, y, z, meshData);
-            //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.up);
-        }
-
-        if (!chunk.GetBlock(x, y - 1, z).IsCovered(Direction.up, chunk, x, y - 1, z))
-        {
-            meshData = FaceDataDown(chunk, x, y, z, meshData);
-            //meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, Direction.down);
-        }
-        
-        CollisionBlockdata(chunk, x, y, z, meshData);
-
-        return meshData;
+        ClearPieces();
+        return base.Blockdata(chunk, x, y, z, meshData);
     }
 
     protected override MeshData FaceDataUp
       (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
+        if (!pieces[0])
+        {
+            pieces[0] = true;
 
-        
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x, y + 0.5f, z) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor); 
-        meshData.AddTriangle(meshData.vertices.Count - 1);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
-        meshData.AddTriangle(meshData.vertices.Count - 1);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
-        meshData.AddTriangle(meshData.vertices.Count - 1);
+            meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x, y + 0.5f, z) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
+            meshData.AddTriangle(meshData.vertices.Count - 1);
+            meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
+            meshData.AddTriangle(meshData.vertices.Count - 1);
+            meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
+            meshData.AddTriangle(meshData.vertices.Count - 1);
 
-        meshData.uv.AddRange(FaceUVs(Direction.up));
+            meshData.uv.AddRange(FaceUVs(Direction.up));
 
-        meshData.AddVertex( Quaternion.Euler(blockRotation) * (new Vector3(x, y + 0.5f, z) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
-        meshData.AddTriangle(meshData.vertices.Count - 1);
-        meshData.AddVertex( Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
-        meshData.AddTriangle(meshData.vertices.Count - 1);
-        meshData.AddVertex( Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
-        meshData.AddTriangle(meshData.vertices.Count - 1);
+            meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x, y + 0.5f, z) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
+            meshData.AddTriangle(meshData.vertices.Count - 1);
+            meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
+            meshData.AddTriangle(meshData.vertices.Count - 1);
+            meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
+            meshData.AddTriangle(meshData.vertices.Count - 1);
 
-        meshData.uv.AddRange(FaceUVs(Direction.up));
+            meshData.uv.AddRange(FaceUVs(Direction.up));
 
-        meshData.AddVertex( Quaternion.Euler(blockRotation) * (new Vector3(x, y + 0.5f, z) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
-        meshData.AddTriangle(meshData.vertices.Count - 1);
-        meshData.AddVertex( Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
-        meshData.AddTriangle(meshData.vertices.Count - 1);
-        meshData.AddVertex( Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
-        meshData.AddTriangle(meshData.vertices.Count - 1);
+            meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x, y + 0.5f, z) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
+            meshData.AddTriangle(meshData.vertices.Count - 1);
+            meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
+            meshData.AddTriangle(meshData.vertices.Count - 1);
+            meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
+            meshData.AddTriangle(meshData.vertices.Count - 1);
 
-        meshData.uv.AddRange(FaceUVs(Direction.up));
+            meshData.uv.AddRange(FaceUVs(Direction.up));
 
-        meshData.AddVertex( Quaternion.Euler(blockRotation) * (new Vector3(x, y + 0.5f, z) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
-        meshData.AddTriangle(meshData.vertices.Count - 1);
-        meshData.AddVertex( Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
-        meshData.AddTriangle(meshData.vertices.Count - 1);
-        meshData.AddVertex( Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) -new Vector3(x,y,z)) +new Vector3(x,y,z), blockColor);
-        meshData.AddTriangle(meshData.vertices.Count - 1);
+            meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x, y + 0.5f, z) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
+            meshData.AddTriangle(meshData.vertices.Count - 1);
+            meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
+            meshData.AddTriangle(meshData.vertices.Count - 1);
+            meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
+            meshData.AddTriangle(meshData.vertices.Count - 1);
 
-        meshData.uv.AddRange(FaceUVs(Direction.up));
+            meshData.uv.AddRange(FaceUVs(Direction.up));
 
-        return meshData;
-    }
-    protected override MeshData FaceDataDown
-         (Chunk chunk, float x, float y, float z, MeshData meshData)
-    {
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-
-        meshData.AddQuadTriangles();
-
-        meshData.uv.AddRange(FaceUVs(Direction.down));
+        }
 
         return meshData;
     }
-
+    
     protected override MeshData FaceDataNorth
-        (Chunk chunk, float x, float y, float z, MeshData meshData)
+      (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
+        meshData = FaceDataUp(chunk, x, y, z, meshData);
         return meshData;
     }
 
     protected override MeshData FaceDataEast
-        (Chunk chunk, float x, float y, float z, MeshData meshData)
+      (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
+        meshData = FaceDataUp(chunk, x, y, z, meshData);
         return meshData;
     }
 
     protected override MeshData FaceDataSouth
-        (Chunk chunk, float x, float y, float z, MeshData meshData)
+      (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
+        meshData = FaceDataUp(chunk, x, y, z, meshData);
         return meshData;
     }
 
     protected override MeshData FaceDataWest
-        (Chunk chunk, float x, float y, float z, MeshData meshData)
+      (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
+        meshData = FaceDataUp(chunk, x, y, z, meshData);
         return meshData;
     }
-    
+
     /// <summary>
     /// Returns if an object is solid
     /// </summary>
