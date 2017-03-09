@@ -51,15 +51,21 @@ public class Block
     {
         blockColor = color;
         blockRotation = rotation;
-        
+
+        sides = new int[6];
         invertedDirections = new Direction[6];
 
-        CalculateDirectionBasedOnRotation((int)blockRotation.x, (int)blockRotation.y, (int)blockRotation.z);
+        for (int i = 0; i < 6; i++)
+        {
+            sides[i] = World.precalculatedRotations[(int)blockRotation.z / 90, (int)blockRotation.x / 90, (int)blockRotation.y / 90, i];
+        }
 
         for (int i = 0; i < invertedDirections.Length; i++)
         {
             invertedDirections[i] = ReturnDirectionBasedOnRotation(GetDirectionByNumber(i));
         }
+
+
     }
 
     protected Direction GetDirectionByNumber(int num)
@@ -89,30 +95,30 @@ public class Block
         switch (dir)
         {
             case Direction.north:
-                return  0;
+                return 0;
             case Direction.south:
-                return  1;
+                return 1;
             case Direction.east:
-                return  2;
+                return 2;
             case Direction.west:
-                return  3;
+                return 3;
             case Direction.up:
-                return  4;
+                return 4;
             case Direction.down:
-                return  5;
+                return 5;
             default:
                 //throw exception
-                return  0;
+                return 0;
         }
     }
 
     protected Direction GetInvertedDirection(Direction direction)
     {
-        int result;
 
-        for(int i = 0; i < invertedDirections.Length; i++)
+
+        for (int i = 0; i < invertedDirections.Length; i++)
         {
-            if(invertedDirections[i] == direction)
+            if (invertedDirections[i] == direction)
             {
                 return GetDirectionByNumber(i);
             }
@@ -122,7 +128,7 @@ public class Block
 
     protected void ClearPieces()
     {
-        for(int i = 0; i < pieces.Length; i++)
+        for (int i = 0; i < pieces.Length; i++)
         {
             pieces[i] = false;
         }
@@ -140,6 +146,10 @@ public class Block
 
     public virtual MeshData Blockdata(Chunk chunk, int x, int y, int z, MeshData meshData)
     {
+       
+
+        //meshData.useRenderDataForCol = true;
+
         if (
             chunk.GetBlock(x, y - 1, z).IsSolid(Direction.up, false) &&
             chunk.GetBlock(x, y + 1, z).IsSolid(Direction.down, false) &&
@@ -148,13 +158,13 @@ public class Block
             chunk.GetBlock(x - 1, y, z).IsSolid(Direction.east, false) &&
             chunk.GetBlock(x + 1, y, z).IsSolid(Direction.west, false)
         )
-        return meshData;
+            return meshData;
 
-            //meshData.useRenderDataForCol = true;
 
-            if (!chunk.GetBlock(x, y + 1, z).IsCovered(Direction.down, chunk, x, y + 1, z))
+
+        if (!chunk.GetBlock(x, y + 1, z).IsCovered(Direction.down, chunk, x, y + 1, z))
         {
-            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, ReturnDirectionBasedOnRotation(GetInvertedDirection(Direction.up))); 
+            meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, ReturnDirectionBasedOnRotation(GetInvertedDirection(Direction.up)));
         }
 
         if (!chunk.GetBlock(x, y - 1, z).IsCovered(Direction.up, chunk, x, y - 1, z))
@@ -183,6 +193,7 @@ public class Block
         }
 
         CollisionBlockdata(chunk, x, y, z, meshData);
+        
 
         return meshData;
     }
@@ -409,267 +420,8 @@ public class Block
         return meshData;
     }
 
-    //Returns index of rotation
-    protected int RotateSides(int x, int y, int z, int oDir)
-    {
-        if (z != 0)
-        {
-            if (z == 0)
-            {
-            }
-            if (z == 90)
-            {
-                switch (oDir)
-                {
-                    case 2:
-                        return  5; //Down
-                        
-                    case 3:
-                        return  4; //Up
-                        
-                    case 4:
-                        return  2; //East
-                        
-                    case 5:
-                        return  3; //West
-                        
-                    case 0:
-                        return  0; //North
-                        
-                    case 1:
-                        return  1; //South
-                        
-                    
-                        
-                }
-            }
-            if (z == 180)
-            {
-                switch (oDir)
-                {
-                    case 2:
-                        return  3; //West
-                        
-                    case 3:
-                        return  2; //East
-                        
-                    case 4:
-                        return  5; //Down
-                        
-                    case 5:
-                        return  4; //Up
-                        
-                    case 0:
-                        return  0; //North
-                        
-                    case 1:
-                        return  1; //South
-                        
-                    
-                        
-                }
-            }
-            if (z == 270)
-            {
-                switch (oDir)
-                {
-                    case 2:
-                        return  4; //Up
-                        
-                    case 3:
-                        return  5; //Down
-                        
-                    case 4:
-                        return  3; //West
-                        
-                    case 5:
-                        return  2; //East
-                        
-                    case 0:
-                        return  0; //North
-                        
-                    case 1:
-                        return  1; //South
-                        
-                    
-                        
-                }
-            }
-        }
-
-        if (x != 0)
-        {
-            if (x == 0)
-            {
-            }
-            if (x == 90)
-            {
-                switch (oDir)
-                {
-                    case 0:
-                        return  4; //Up
-                        
-                    case 1:
-                        return  5; //Down
-                        
-                    case 4:
-                        return  1; //South
-                        
-                    case 5:
-                        return  0; //North
-                        
-                    case 2:
-                        return  2; //East
-                        
-                    case 3:
-                        return  3; //West
-                        
-                    
-                        
-                }
-            }
-            if (x == 180)
-            {
-                switch (oDir)
-                {
-                    case 0:
-                        return  1; //South
-                        
-                    case 1:
-                        return  0; //North
-                        
-                    case 4:
-                        return  5; //Down
-                        
-                    case 5:
-                        return  4; //Up
-                        
-                    case 2:
-                        return  2; //East
-                        
-                    case 3:
-                        return  3; //West
-                        
-                    
-                        
-                }
-            }
-            if (x == 270)
-            {
-                switch (oDir)
-                {
-                    case 0:
-                        return  5; //Down
-                        
-                    case 1:
-                        return  4; //Up
-                        
-                    case 4:
-                        return  0; //North
-                        
-                    case 5:
-                        return  1; //South
-                        
-                    case 2:
-                        return  2; //East
-                        
-                    case 3:
-                        return  3; //West
-                        
-                    
-                        
-                }
-            }
-
-        }
-
-        if (y != 0)
-        {
-
-            if (y == 0)
-            {
-            }
-            if (y == 90)
-            {
-                switch (oDir)
-                {
-                    case 0:
-                        return  3; //West
-                        
-                    case 1:
-                        return  2; //East
-                        
-                    case 2:
-                        return  0; //North
-                        
-                    case 3:
-                        return  1; //South
-                        
-                    case 4:
-                        return  4; //Up
-                        
-                    case 5:
-                        return  5; //Down
-                        
-                    
-                        
-                }
-            }
-            if (y == 180)
-            {
-                switch (oDir)
-                {
-                    case 0:
-                        return  1; //South
-                        
-                    case 1:
-                        return  0; //North
-                        
-                    case 2:
-                        return  3; //West
-                        
-                    case 3:
-                        return  2; //East
-                        
-                    case 4:
-                        return  4; //Up
-                        
-                    case 5:
-                        return  5; //Down
-                        
-                }
-            }
-            if (y == 270)
-            {
-                switch (oDir)
-                {
-                    case 0:
-                        return  2; //East
-                        
-                    case 1:
-                        return  3; //West
-                        
-                    case 2:
-                        return  1; //South
-                        
-                    case 3:
-                        return  0; //North
-                        
-                    case 4:
-                        return  4; //Up
-                        
-                    case 5:
-                        return  5; //Down
-                        
-                }
-            }
-        }
 
 
-        return oDir;
-    }
-
-   
     #endregion
 
     #region ColliderData
@@ -874,9 +626,21 @@ public class Block
 
     protected Direction ReturnDirectionBasedOnRotation(Direction startDirection)
     {
+        /*
+        if (debugIsTrue)
+        {
+            Debug.Log((int)(blockRotation.z / 90) + " " + (int)(blockRotation.x / 90) + " " + (int)(blockRotation.y / 90));
+        }
+        */
+
+        //return GetDirectionByNumber(World.precalculatedRotations[(int)(blockRotation.z / 90), (int)(blockRotation.x / 90), (int)(blockRotation.y / 90), GetNumberByDirection(startDirection)]);
+
         return GetDirectionByNumber(sides[GetNumberByDirection(startDirection)]);
+
+        //return GetDirectionByNumber(sides[GetNumberByDirection(startDirection)]);
     }
 
+    /*
     protected void CalculateDirectionBasedOnRotation(int x, int y, int z)//, Direction startDirection)
     {
         //int startDirectionNumber;
@@ -938,5 +702,264 @@ public class Block
         //return GetDirectionByNumber(sides[startDirectionNumber]);
 
     }
-    
+    //Returns index of rotation
+    protected int RotateSides(int x, int y, int z, int oDir)
+    {
+        if (z != 0)
+        {
+            if (z == 0)
+            {
+            }
+            if (z == 90)
+            {
+                switch (oDir)
+                {
+                    case 2:
+                        return 5; //Down
+
+                    case 3:
+                        return 4; //Up
+
+                    case 4:
+                        return 2; //East
+
+                    case 5:
+                        return 3; //West
+
+                    case 0:
+                        return 0; //North
+
+                    case 1:
+                        return 1; //South
+
+
+
+                }
+            }
+            if (z == 180)
+            {
+                switch (oDir)
+                {
+                    case 2:
+                        return 3; //West
+
+                    case 3:
+                        return 2; //East
+
+                    case 4:
+                        return 5; //Down
+
+                    case 5:
+                        return 4; //Up
+
+                    case 0:
+                        return 0; //North
+
+                    case 1:
+                        return 1; //South
+
+
+
+                }
+            }
+            if (z == 270)
+            {
+                switch (oDir)
+                {
+                    case 2:
+                        return 4; //Up
+
+                    case 3:
+                        return 5; //Down
+
+                    case 4:
+                        return 3; //West
+
+                    case 5:
+                        return 2; //East
+
+                    case 0:
+                        return 0; //North
+
+                    case 1:
+                        return 1; //South
+
+
+
+                }
+            }
+        }
+
+        if (x != 0)
+        {
+            if (x == 0)
+            {
+            }
+            if (x == 90)
+            {
+                switch (oDir)
+                {
+                    case 0:
+                        return 4; //Up
+
+                    case 1:
+                        return 5; //Down
+
+                    case 4:
+                        return 1; //South
+
+                    case 5:
+                        return 0; //North
+
+                    case 2:
+                        return 2; //East
+
+                    case 3:
+                        return 3; //West
+
+
+
+                }
+            }
+            if (x == 180)
+            {
+                switch (oDir)
+                {
+                    case 0:
+                        return 1; //South
+
+                    case 1:
+                        return 0; //North
+
+                    case 4:
+                        return 5; //Down
+
+                    case 5:
+                        return 4; //Up
+
+                    case 2:
+                        return 2; //East
+
+                    case 3:
+                        return 3; //West
+
+
+
+                }
+            }
+            if (x == 270)
+            {
+                switch (oDir)
+                {
+                    case 0:
+                        return 5; //Down
+
+                    case 1:
+                        return 4; //Up
+
+                    case 4:
+                        return 0; //North
+
+                    case 5:
+                        return 1; //South
+
+                    case 2:
+                        return 2; //East
+
+                    case 3:
+                        return 3; //West
+
+
+
+                }
+            }
+
+        }
+
+        if (y != 0)
+        {
+
+            if (y == 0)
+            {
+            }
+            if (y == 90)
+            {
+                switch (oDir)
+                {
+                    case 0:
+                        return 3; //West
+
+                    case 1:
+                        return 2; //East
+
+                    case 2:
+                        return 0; //North
+
+                    case 3:
+                        return 1; //South
+
+                    case 4:
+                        return 4; //Up
+
+                    case 5:
+                        return 5; //Down
+
+
+
+                }
+            }
+            if (y == 180)
+            {
+                switch (oDir)
+                {
+                    case 0:
+                        return 1; //South
+
+                    case 1:
+                        return 0; //North
+
+                    case 2:
+                        return 3; //West
+
+                    case 3:
+                        return 2; //East
+
+                    case 4:
+                        return 4; //Up
+
+                    case 5:
+                        return 5; //Down
+
+                }
+            }
+            if (y == 270)
+            {
+                switch (oDir)
+                {
+                    case 0:
+                        return 2; //East
+
+                    case 1:
+                        return 3; //West
+
+                    case 2:
+                        return 1; //South
+
+                    case 3:
+                        return 0; //North
+
+                    case 4:
+                        return 4; //Up
+
+                    case 5:
+                        return 5; //Down
+
+                }
+            }
+        }
+
+
+        return oDir;
+    }
+    */
 }

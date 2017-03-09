@@ -3,8 +3,10 @@
  Class that represents a chunk of world, it holds the construction information of every block
  */
 using UnityEngine;
+using System;
 using System.Threading;
 using System.Collections;
+using DigitalRuby.Threading;
 
 //Required components
 [RequireComponent(typeof(MeshFilter))]
@@ -72,7 +74,7 @@ public class Chunk : MonoBehaviour
         if (update)
         {
             update = false;
-            UpdateChunk();
+            EZThread.ExecuteInBackground(UpdateChunk, RenderMesh);
         }
     }
 
@@ -101,17 +103,11 @@ public class Chunk : MonoBehaviour
     /// <summary>
     ///Updates the chunk based on its contents
     ///</summary>
-    void UpdateChunk()
+    MeshData UpdateChunk()
     {
         //Thread t = new Thread(ThreadBlockData);
         //t.Start();
         //System.GC.Collect();
-
-        ThreadBlockData();
-    }
-
-    void ThreadBlockData()
-    {
         MeshData meshData = new MeshData();
         for (int x = 0; x < chunkSize; x++)
         {
@@ -123,14 +119,18 @@ public class Chunk : MonoBehaviour
                 }
             }
         }
-        RenderMesh(meshData);
+
+        return meshData;
+        //RenderMesh(meshData);
     }
 
     /// <summary>
     /// Sends the calculated mesh info to the mesh and collision components
     /// </summary>
-    void RenderMesh(MeshData meshData)
+    private void RenderMesh(System.Object meshDataObject)
     {
+        MeshData meshData = (MeshData)meshDataObject;
+
         meshFilter.mesh.Clear();
         meshFilter.mesh.vertices = meshData.vertices.ToArray();
         //Debug.Log(meshFilter.mesh.vertices.Length);
