@@ -12,15 +12,19 @@ public class World : MonoBehaviour
 
     public Vector3 worldSize;
 
+    int seed;
+
     void Awake()
     {
         EZThread.ExecuteInBackground(PrecalculateRotations);
-        
+
     }
 
     // Use this for initialization
     void Start()
     {
+        seed = Random.Range(0, 100);
+
         GenerateWorld();
         /*
         for (int x = -((int)worldSize.x / 2); x < ((int)worldSize.x / 2); x++)
@@ -51,8 +55,8 @@ public class World : MonoBehaviour
         }
     }
 
-    
-    
+
+
 
     // Update is called once per frame
     void Update()
@@ -88,6 +92,8 @@ public class World : MonoBehaviour
         //Add it to the chunks dictionary with the position as the key
         chunks.Add(worldPos, newChunk);
 
+        
+
         //Add the following:
         for (int xi = 0; xi < Chunk.chunkSize; xi++)
         {
@@ -95,14 +101,42 @@ public class World : MonoBehaviour
             {
                 for (int zi = 0; zi < Chunk.chunkSize; zi++)
                 {
-                    if (yi <= Mathf.PerlinNoise(xi * 10, zi * 10))
+                    Vector2 pos = 0.05f * (new Vector2(xi + (x + ((int)worldSize.x * Chunk.chunkSize)), zi + (z + ((int)worldSize.z * Chunk.chunkSize)))) + new Vector2(0, 0);
+                    float noise = Mathf.PerlinNoise(pos.x + seed, pos.y + seed);
+                    if (yi * 0.1f < noise)
+                    {
+                        if (yi <= 2)
+                        {
+                            SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(0, 0, 0), Color.blue));
+                        }
+                        else if (yi > 2 && yi <= 3)
+                        {
+                            SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(0, 0, 0), new Color32(139, 69, 19,1)));
+                        }
+                        else if (yi > 3  && yi <= 7)
+                        {
+                            SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(0, 0, 0), Color.green));
+                        }
+                        else
+                        {
+                            SetBlock(x + xi, y + yi, z + zi, new BlockPyramid(new Vector3(0, 0, 0), Color.white));
+                        }
+
+                    }
+                    else
+                    {
+                        SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white));
+                    };
+
+
+                    /*
+                    if (0.5f <= Mathf.PerlinNoise(xi, zi))
                     {
                         SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(0, 0, 0), Color.white));
                     }
                     else
                     {
                         SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white));
-
 
                     //PERFORMANCE TESTING RANDOM
                         /*
@@ -127,7 +161,7 @@ public class World : MonoBehaviour
                         }
                         */
 
-                    }
+
                 }
             }
         }
