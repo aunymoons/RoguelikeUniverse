@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using DigitalRuby.Threading;
 
+using ProceduralToolkit.Examples;
+
 public class World : MonoBehaviour
 {
 
@@ -13,6 +15,8 @@ public class World : MonoBehaviour
     public Vector3 worldSize;
 
     int seed;
+
+    CellularAutomaton celAuto;
 
     void Awake()
     {
@@ -25,7 +29,9 @@ public class World : MonoBehaviour
     {
         seed = Random.Range(0, 100);
 
-        GenerateWorld();
+        StartCoroutine(Test());
+
+        //GenerateWorld();
         /*
         for (int x = -((int)worldSize.x / 2); x < ((int)worldSize.x / 2); x++)
         {
@@ -38,6 +44,13 @@ public class World : MonoBehaviour
             }
         }
         */
+    }
+
+    IEnumerator Test()
+    {
+        celAuto = new CellularAutomaton((int)worldSize.x * Chunk.chunkSize, (int)worldSize.z * Chunk.chunkSize, Ruleset.majority, 0.5f, true);
+        yield return new WaitForSeconds(1);
+        GenerateWorld();
     }
 
     void GenerateWorld()
@@ -61,7 +74,7 @@ public class World : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        celAuto.Simulate();
     }
 
     /// <summary>
@@ -92,7 +105,7 @@ public class World : MonoBehaviour
         //Add it to the chunks dictionary with the position as the key
         chunks.Add(worldPos, newChunk);
 
-        
+
 
         //Add the following:
         for (int xi = 0; xi < Chunk.chunkSize; xi++)
@@ -101,6 +114,32 @@ public class World : MonoBehaviour
             {
                 for (int zi = 0; zi < Chunk.chunkSize; zi++)
                 {
+                    //CELLULAR AUTOMATION
+
+                   if(yi > 0 || yi < 3)
+                    {
+
+                    
+                        if (celAuto.cells[xi + (x + (((int)worldSize.x / 2) * Chunk.chunkSize)), zi + (z + (((int)worldSize.z / 2) * Chunk.chunkSize))] == CellState.Alive)
+                        {
+                            SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(0, 0, 0), Color.red));
+                        }
+                        else
+                        {
+                            SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white));
+                        }
+                    }
+                    if (yi == 0)
+                    {
+                        SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(0, 0, 0), Color.white));
+                    }
+                    if(yi > 3)
+                    {
+                        SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white));
+                    }
+
+                    ///PERLIN NOISE VERSION 
+                    /*
                     Vector2 pos = 0.05f * (new Vector2(xi + (x + ((int)worldSize.x * Chunk.chunkSize)), zi + (z + ((int)worldSize.z * Chunk.chunkSize)))) + new Vector2(0, 0);
                     float noise = Mathf.PerlinNoise(pos.x + seed, pos.y + seed);
                     if (yi * 0.1f < noise)
@@ -127,6 +166,8 @@ public class World : MonoBehaviour
                     {
                         SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white));
                     };
+                    */
+                    ///BASIC
 
 
                     /*
