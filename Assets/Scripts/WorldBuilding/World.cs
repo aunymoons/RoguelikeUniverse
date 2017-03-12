@@ -49,8 +49,31 @@ public class World : MonoBehaviour
     IEnumerator Test()
     {
         celAuto = new CellularAutomaton((int)worldSize.x * Chunk.chunkSize, (int)worldSize.z * Chunk.chunkSize, Ruleset.majority, 0.5f, true);
-        yield return new WaitForSeconds(1);
-        GenerateWorld();
+        yield return new WaitForSeconds(1f);
+        StartCoroutine(GenerateWorldCoroutine());
+    }
+
+    IEnumerator GenerateWorldCoroutine()
+    {
+        for (int x = -((int)worldSize.x / 2); x < ((int)worldSize.x / 2); x++)
+        {
+            for (int y = 0; y < (int)worldSize.y; y++)
+            {
+                for (int z = -((int)worldSize.z / 2); z < ((int)worldSize.z / 2); z++)
+                {
+                    yield return new WaitForEndOfFrame();
+                    CreateChunk(x * (Chunk.chunkSize), y * (Chunk.chunkSize), z * (Chunk.chunkSize));
+                    
+                }
+            }
+
+        }
+
+        foreach (KeyValuePair<WorldPos, Chunk> c in chunks)
+        {
+            yield return new WaitForEndOfFrame();
+            c.Value.update = true;
+        }
     }
 
     void GenerateWorld()
@@ -66,6 +89,13 @@ public class World : MonoBehaviour
             }
 
         }
+        
+        
+        foreach (KeyValuePair<WorldPos, Chunk> c in chunks)
+        {
+            c.Value.update = true;
+        }
+        
     }
 
 
@@ -122,20 +152,20 @@ public class World : MonoBehaviour
                     
                         if (celAuto.cells[xi + (x + (((int)worldSize.x / 2) * Chunk.chunkSize)), zi + (z + (((int)worldSize.z / 2) * Chunk.chunkSize))] == CellState.Alive)
                         {
-                            SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(0, 0, 0), Color.red));
+                            SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(0, 0, 0), Color.red), false);
                         }
                         else
                         {
-                            SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white));
+                            SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white), false);
                         }
                     }
                     if (yi == 0)
                     {
-                        SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(0, 0, 0), Color.white));
+                        SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(0, 0, 0), Color.white), false);
                     }
                     if(yi > 3)
                     {
-                        SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white));
+                        SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white), false);
                     }
 
                     ///PERLIN NOISE VERSION 
@@ -211,6 +241,7 @@ public class World : MonoBehaviour
         gameObject.SetActive(false);
         gameObject.SetActive(true);
         */
+        //newChunk.StartUpdate();
     }
 
     public void DestroyChunk(int x, int y, int z)
@@ -256,7 +287,7 @@ public class World : MonoBehaviour
 
     }
 
-    public void SetBlock(int x, int y, int z, Block block)
+    public void SetBlock(int x, int y, int z, Block block, bool updateNow = true)
     {
         Chunk chunk = GetChunk(x, y, z);
 
@@ -264,31 +295,31 @@ public class World : MonoBehaviour
         {
             chunk.SetBlock(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z, block);
 
-            chunk.update = true;
+            chunk.update = updateNow;
 
 
-            UpdateIfEqual(x - chunk.pos.x, 0, new WorldPos(x - 1, y, z));
+            UpdateIfEqual(x - chunk.pos.x, 0, new WorldPos(x - 1, y, z), updateNow);
 
-            UpdateIfEqual(x - chunk.pos.x, Chunk.chunkSize - 1, new WorldPos(x + 1, y, z));
+            UpdateIfEqual(x - chunk.pos.x, Chunk.chunkSize - 1, new WorldPos(x + 1, y, z), updateNow);
 
-            UpdateIfEqual(y - chunk.pos.y, 0, new WorldPos(x, y - 1, z));
+            UpdateIfEqual(y - chunk.pos.y, 0, new WorldPos(x, y - 1, z), updateNow);
 
-            UpdateIfEqual(y - chunk.pos.y, Chunk.chunkSize - 1, new WorldPos(x, y + 1, z));
+            UpdateIfEqual(y - chunk.pos.y, Chunk.chunkSize - 1, new WorldPos(x, y + 1, z), updateNow);
 
-            UpdateIfEqual(z - chunk.pos.z, 0, new WorldPos(x, y, z - 1));
+            UpdateIfEqual(z - chunk.pos.z, 0, new WorldPos(x, y, z - 1), updateNow);
 
-            UpdateIfEqual(z - chunk.pos.z, Chunk.chunkSize - 1, new WorldPos(x, y, z + 1));
+            UpdateIfEqual(z - chunk.pos.z, Chunk.chunkSize - 1, new WorldPos(x, y, z + 1), updateNow);
 
         }
     }
 
-    void UpdateIfEqual(int value1, int value2, WorldPos pos)
+    void UpdateIfEqual(int value1, int value2, WorldPos pos, bool updateNow)
     {
         if (value1 == value2)
         {
             Chunk chunk = GetChunk(pos.x, pos.y, pos.z);
             if (chunk != null)
-                chunk.update = true;
+                chunk.update = updateNow;
         }
     }
 

@@ -23,7 +23,7 @@ public class Chunk : MonoBehaviour
     private Block[,,] blocks = new Block[chunkSize, chunkSize, chunkSize];
 
     //The average size of a chunk
-    public static int chunkSize = 10;
+    public static int chunkSize = 16;
   
 
     //A flag to mark this chunk whenever its updated so that the information gets recalculated by the end of the frame
@@ -77,6 +77,7 @@ public class Chunk : MonoBehaviour
             EZThread.ExecuteInBackground(UpdateChunk, RenderMesh);
         }
     }
+    
 
     /// <summary>
     /// Retrieves a block object given the specific coordinates of it
