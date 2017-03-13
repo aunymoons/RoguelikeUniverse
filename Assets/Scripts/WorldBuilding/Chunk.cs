@@ -74,7 +74,8 @@ public class Chunk : MonoBehaviour
         if (update)
         {
             update = false;
-            EZThread.ExecuteInBackground(UpdateChunk, RenderMesh);
+            UpdateChunk();
+            //EZThread.ExecuteInBackground(UpdateChunk, RenderMesh);
         }
     }
     
@@ -104,8 +105,10 @@ public class Chunk : MonoBehaviour
     /// <summary>
     ///Updates the chunk based on its contents
     ///</summary>
-    MeshData UpdateChunk()
+    //MeshData UpdateChunk()
+    void UpdateChunk()
     {
+        
         //Thread t = new Thread(ThreadBlockData);
         //t.Start();
         //System.GC.Collect();
@@ -121,8 +124,31 @@ public class Chunk : MonoBehaviour
             }
         }
 
-        return meshData;
-        //RenderMesh(meshData);
+        //return meshData;
+        RenderMesh(meshData);
+        
+
+        //StartCoroutine(UpdateChunkCoroutine());
+    }
+
+    IEnumerator UpdateChunkCoroutine()
+    {
+        WaitForEndOfFrame delay = new WaitForEndOfFrame();
+        MeshData meshData = new MeshData();
+        for (int x = 0; x < chunkSize; x++)
+        {
+            for (int y = 0; y < chunkSize; y++)
+            {
+                for (int z = 0; z < chunkSize; z++)
+                {
+                    yield return delay;
+                    meshData = blocks[x, y, z].Blockdata(this, x, y, z, meshData);
+                }
+            }
+        }
+
+        //return meshData;
+        RenderMesh(meshData);
     }
 
     /// <summary>

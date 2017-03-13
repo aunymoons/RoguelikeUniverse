@@ -14,14 +14,16 @@ public class World : MonoBehaviour
 
     public Vector3 worldSize;
 
+    public bool generate;
+
     int seed;
 
     CellularAutomaton celAuto;
 
     void Awake()
     {
-        EZThread.ExecuteInBackground(PrecalculateRotations);
-
+        //EZThread.ExecuteInBackground(PrecalculateRotations);
+        PrecalculateRotations();
     }
 
     // Use this for initialization
@@ -49,31 +51,37 @@ public class World : MonoBehaviour
     IEnumerator Test()
     {
         celAuto = new CellularAutomaton((int)worldSize.x * Chunk.chunkSize, (int)worldSize.z * Chunk.chunkSize, Ruleset.majority, 0.5f, true);
+        generate = true;
         yield return new WaitForSeconds(1f);
+        generate = false;
         StartCoroutine(GenerateWorldCoroutine());
+        
     }
 
     IEnumerator GenerateWorldCoroutine()
     {
+        WaitForEndOfFrame delay = new WaitForEndOfFrame();
+
         for (int x = -((int)worldSize.x / 2); x < ((int)worldSize.x / 2); x++)
         {
             for (int y = 0; y < (int)worldSize.y; y++)
             {
                 for (int z = -((int)worldSize.z / 2); z < ((int)worldSize.z / 2); z++)
                 {
-                    yield return new WaitForEndOfFrame();
+                    yield return delay;
                     CreateChunk(x * (Chunk.chunkSize), y * (Chunk.chunkSize), z * (Chunk.chunkSize));
                     
                 }
             }
-
+            
         }
-
+        //System.GC.Collect();
         foreach (KeyValuePair<WorldPos, Chunk> c in chunks)
         {
-            yield return new WaitForEndOfFrame();
+            yield return delay;
             c.Value.update = true;
         }
+        //System.GC.Collect();
     }
 
     void GenerateWorld()
@@ -104,7 +112,11 @@ public class World : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        celAuto.Simulate();
+        if (generate)
+        {
+            celAuto.Simulate();
+        }
+        
     }
 
     /// <summary>
