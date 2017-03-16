@@ -13,7 +13,7 @@ public class Block
     /*POSITIONING AND MESH GENERATION*/
 
     //The face direction enum to calculate face visibility
-    public enum Direction { north, east, south, west, up, down };
+    public enum Direction { north = 0, south = 1, east = 2, west = 3, up = 4, down = 5 };
 
     public int cubeDirection; //24 possible positions for each block // change for boolean flips, its easier
 
@@ -62,11 +62,13 @@ public class Block
 
         for (int i = 0; i < invertedDirections.Length; i++)
         {
-            invertedDirections[i] = ReturnDirectionBasedOnRotation(GetDirectionByNumber(i));
+            invertedDirections[i] = ReturnDirectionBasedOnRotation((Direction)i);
         }
 
 
     }
+
+    /*
 
     protected Direction GetDirectionByNumber(int num)
     {
@@ -112,6 +114,8 @@ public class Block
         }
     }
 
+    */
+
     protected Direction GetInvertedDirection(Direction direction)
     {
 
@@ -120,7 +124,7 @@ public class Block
         {
             if (invertedDirections[i] == direction)
             {
-                return GetDirectionByNumber(i);
+                return (Direction)i;
             }
         }
         return direction;
@@ -149,7 +153,7 @@ public class Block
        
 
         //meshData.useRenderDataForCol = true;
-
+/*
         if (
             chunk.GetBlock(x, y - 1, z).IsSolid(Direction.up, false) &&
             chunk.GetBlock(x, y + 1, z).IsSolid(Direction.down, false) &&
@@ -160,7 +164,7 @@ public class Block
         )
             return meshData;
 
-
+        */
 
         if (!chunk.GetBlock(x, y + 1, z).IsCovered(Direction.down, chunk, x, y + 1, z))
         {
@@ -192,6 +196,7 @@ public class Block
             meshData = GetMeshDataFromRotation(chunk, x, y, z, meshData, ReturnDirectionBasedOnRotation(GetInvertedDirection(Direction.west)));
         }
 
+
         CollisionBlockdata(chunk, x, y, z, meshData);
         
 
@@ -210,6 +215,8 @@ public class Block
     /// <returns></returns>
     public bool IsCovered(Direction direction, Chunk chunk, int x, int y, int z, bool forCollision = false)
     {
+        //if (forCollision) return true;
+
         if (
             chunk.GetBlock(x, y - 1, z).IsSolid(Direction.up, forCollision) &&
             chunk.GetBlock(x, y + 1, z).IsSolid(Direction.down, forCollision) &&
@@ -635,7 +642,7 @@ public class Block
 
         //return GetDirectionByNumber(World.precalculatedRotations[(int)(blockRotation.z / 90), (int)(blockRotation.x / 90), (int)(blockRotation.y / 90), GetNumberByDirection(startDirection)]);
 
-        return GetDirectionByNumber(sides[GetNumberByDirection(startDirection)]);
+        return (Direction)sides[(int)startDirection];
 
         //return GetDirectionByNumber(sides[GetNumberByDirection(startDirection)]);
     }

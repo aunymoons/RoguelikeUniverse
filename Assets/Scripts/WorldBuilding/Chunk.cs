@@ -23,15 +23,20 @@ public class Chunk : MonoBehaviour
     private Block[,,] blocks = new Block[chunkSize, chunkSize, chunkSize];
 
     //The average size of a chunk
-    public static int chunkSize = 16;
-  
+    public static int chunkSize = 10;
+
 
     //A flag to mark this chunk whenever its updated so that the information gets recalculated by the end of the frame
-    public bool update = true;
+    public bool update;
+
+    public bool generateData, renderMesh; 
+
 
     //Components on this chunk
     MeshFilter meshFilter;
     MeshCollider meshCollider;
+
+    MeshData thisMeshData;
     
     //Use this for initialization
     void Start()
@@ -71,10 +76,27 @@ public class Chunk : MonoBehaviour
     //Update is called once per frame
     void Update()
     {
+        
         if (update)
         {
             update = false;
-            UpdateChunk();
+            //UpdateChunk();
+            //RenderMesh(thisMeshData);
+            //UpdateChunk();
+            EZThread.ExecuteInBackground(UpdateChunk, RenderMesh);
+        }
+        
+        if (generateData)
+        {
+            generateData = false;
+            EZThread.ExecuteInBackground(GenerateChunkData);
+        }
+
+        if (renderMesh)
+        {
+            renderMesh = false;
+            //UpdateChunk();
+            RenderMesh(thisMeshData);
             //EZThread.ExecuteInBackground(UpdateChunk, RenderMesh);
         }
     }
@@ -106,49 +128,57 @@ public class Chunk : MonoBehaviour
     ///Updates the chunk based on its contents
     ///</summary>
     //MeshData UpdateChunk()
-    void UpdateChunk()
+
+    void GenerateChunkData()
+    {
+        thisMeshData = new MeshData();
+        for (int x = 0; x < chunkSize; x++)
+        {
+            for (int y = 0; y < chunkSize; y++)
+            {
+                for (int z = 0; z < chunkSize; z++)
+                {
+                    thisMeshData = blocks[x, y, z].Blockdata(this, x, y, z, thisMeshData);
+                }
+            }
+        }
+    }
+    
+    
+    MeshData UpdateChunk()
     {
         
         //Thread t = new Thread(ThreadBlockData);
         //t.Start();
         //System.GC.Collect();
-        MeshData meshData = new MeshData();
+        thisMeshData = new MeshData();
         for (int x = 0; x < chunkSize; x++)
         {
             for (int y = 0; y < chunkSize; y++)
             {
                 for (int z = 0; z < chunkSize; z++)
                 {
-                    meshData = blocks[x, y, z].Blockdata(this, x, y, z, meshData);
+                    thisMeshData = blocks[x, y, z].Blockdata(this, x, y, z, thisMeshData);
                 }
             }
         }
 
-        //return meshData;
-        RenderMesh(meshData);
+        return thisMeshData;
+        //RenderMesh(thisMeshData);
         
 
         //StartCoroutine(UpdateChunkCoroutine());
     }
+    
 
     IEnumerator UpdateChunkCoroutine()
     {
         WaitForEndOfFrame delay = new WaitForEndOfFrame();
-        MeshData meshData = new MeshData();
-        for (int x = 0; x < chunkSize; x++)
-        {
-            for (int y = 0; y < chunkSize; y++)
-            {
-                for (int z = 0; z < chunkSize; z++)
-                {
-                    yield return delay;
-                    meshData = blocks[x, y, z].Blockdata(this, x, y, z, meshData);
-                }
-            }
-        }
+        GenerateChunkData();
 
+        yield return delay;
         //return meshData;
-        RenderMesh(meshData);
+        RenderMesh(thisMeshData);
     }
 
     /// <summary>

@@ -20,10 +20,12 @@ public class World : MonoBehaviour
 
     CellularAutomaton celAuto;
 
+    bool creatingChunk;
+
     void Awake()
     {
-        //EZThread.ExecuteInBackground(PrecalculateRotations);
-        PrecalculateRotations();
+        EZThread.ExecuteInBackground(PrecalculateRotations);
+        //PrecalculateRotations();
     }
 
     // Use this for initialization
@@ -47,6 +49,10 @@ public class World : MonoBehaviour
         }
         */
     }
+
+    
+
+    
 
     IEnumerator Test()
     {
@@ -75,12 +81,26 @@ public class World : MonoBehaviour
             }
             
         }
+        /*
         //System.GC.Collect();
         foreach (KeyValuePair<WorldPos, Chunk> c in chunks)
         {
             yield return delay;
             c.Value.update = true;
         }
+        */
+        foreach (KeyValuePair<WorldPos, Chunk> c in chunks)
+        {
+            yield return delay;
+            c.Value.generateData = true;
+        }
+
+        foreach (KeyValuePair<WorldPos, Chunk> c in chunks)
+        {
+            yield return delay;
+            c.Value.renderMesh = true;
+        }
+        //*/
         //System.GC.Collect();
     }
 
@@ -101,7 +121,7 @@ public class World : MonoBehaviour
         
         foreach (KeyValuePair<WorldPos, Chunk> c in chunks)
         {
-            c.Value.update = true;
+            c.Value.generateData = true;
         }
         
     }
@@ -157,7 +177,7 @@ public class World : MonoBehaviour
                 for (int zi = 0; zi < Chunk.chunkSize; zi++)
                 {
                     //CELLULAR AUTOMATION
-
+                    /*
                    if(yi > 0 || yi < 3)
                     {
 
@@ -179,7 +199,7 @@ public class World : MonoBehaviour
                     {
                         SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white), false);
                     }
-
+                    */
                     ///PERLIN NOISE VERSION 
                     /*
                     Vector2 pos = 0.05f * (new Vector2(xi + (x + ((int)worldSize.x * Chunk.chunkSize)), zi + (z + ((int)worldSize.z * Chunk.chunkSize)))) + new Vector2(0, 0);
@@ -220,29 +240,29 @@ public class World : MonoBehaviour
                     else
                     {
                         SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white));
-
+                   */
                     //PERFORMANCE TESTING RANDOM
-                        /*
+                        
                         int rand = Random.Range(0, 3);
                         if (rand == 1)
                         {
                             int thisx = Random.Range(0, 4) * 90;
                             int thisy = Random.Range(0, 4) * 90;
                             int thisz = Random.Range(0, 4) * 90;
-                            SetBlock(x + xi, y + yi, z + zi, new BlockPyramid(new Vector3(thisx, thisy, thisz), Random.ColorHSV()));
+                            SetBlock(x + xi, y + yi, z + zi, new BlockPyramid(new Vector3(thisx, thisy, thisz), Random.ColorHSV()), false);
                         }
                         else if (rand == 2)
                         {
                             int thisx = Random.Range(0, 4) * 90;
                             int thisy = Random.Range(0, 4) * 90;
                             int thisz = Random.Range(0, 4) * 90;
-                            SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(thisx, thisy, thisz), Random.ColorHSV()));
+                            SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(thisx, thisy, thisz), Random.ColorHSV()), false);
                         }
                         else
                         {
-                            SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white));
+                            SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white), false);
                         }
-                        */
+                        
 
 
                 }
