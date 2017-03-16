@@ -35,6 +35,7 @@ public class Block
     //Flags
     public bool covered;
 
+
     #endregion
 
     public bool debugIsTrue;
@@ -150,21 +151,23 @@ public class Block
 
     public virtual MeshData Blockdata(Chunk chunk, int x, int y, int z, MeshData meshData)
     {
-       
+
 
         //meshData.useRenderDataForCol = true;
-/*
-        if (
-            chunk.GetBlock(x, y - 1, z).IsSolid(Direction.up, false) &&
-            chunk.GetBlock(x, y + 1, z).IsSolid(Direction.down, false) &&
-            chunk.GetBlock(x, y, z - 1).IsSolid(Direction.north, false) &&
-            chunk.GetBlock(x, y, z + 1).IsSolid(Direction.south, false) &&
-            chunk.GetBlock(x - 1, y, z).IsSolid(Direction.east, false) &&
-            chunk.GetBlock(x + 1, y, z).IsSolid(Direction.west, false)
-        )
-            return meshData;
+        /*
+                if (
+                    chunk.GetBlock(x, y - 1, z).IsSolid(Direction.up, false) &&
+                    chunk.GetBlock(x, y + 1, z).IsSolid(Direction.down, false) &&
+                    chunk.GetBlock(x, y, z - 1).IsSolid(Direction.north, false) &&
+                    chunk.GetBlock(x, y, z + 1).IsSolid(Direction.south, false) &&
+                    chunk.GetBlock(x - 1, y, z).IsSolid(Direction.east, false) &&
+                    chunk.GetBlock(x + 1, y, z).IsSolid(Direction.west, false)
+                )
+                    return meshData;
 
-        */
+                */
+
+        blockPosition = new Vector3(x, y, z);
 
         if (!chunk.GetBlock(x, y + 1, z).IsCovered(Direction.down, chunk, x, y + 1, z))
         {
@@ -198,7 +201,7 @@ public class Block
 
 
         CollisionBlockdata(chunk, x, y, z, meshData);
-        
+
 
         return meshData;
     }
@@ -336,10 +339,10 @@ public class Block
         (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
 
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y + 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y + 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y + 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y + 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
 
         meshData.AddQuadTriangles();
 
@@ -351,10 +354,10 @@ public class Block
     protected virtual MeshData FaceDataDown
          (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
 
         meshData.AddQuadTriangles();
 
@@ -367,10 +370,10 @@ public class Block
         (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
 
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y + 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y + 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
 
         meshData.AddQuadTriangles();
 
@@ -383,10 +386,10 @@ public class Block
         (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
 
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y + 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y + 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
 
         meshData.AddQuadTriangles();
 
@@ -399,10 +402,10 @@ public class Block
         (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
 
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y + 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y + 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
 
         meshData.AddQuadTriangles();
 
@@ -415,10 +418,10 @@ public class Block
         (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
 
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y + 0.5f, z + 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y + 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) - new Vector3(x, y, z)) + new Vector3(x, y, z), blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
 
         meshData.AddQuadTriangles();
 
@@ -647,326 +650,4 @@ public class Block
         //return GetDirectionByNumber(sides[GetNumberByDirection(startDirection)]);
     }
 
-    /*
-    protected void CalculateDirectionBasedOnRotation(int x, int y, int z)//, Direction startDirection)
-    {
-        //int startDirectionNumber;
-
-        //startDirectionNumber = GetNumberByDirection(startDirection);
-
-        sides = new int[6];
-
-        //assigns sides accordingly
-        for (int i = 0; i < sides.Length; i++)
-        {
-            sides[i] = i;
-        }
-
-        //Z Rotation
-        if (z != 0)
-        {
-            int[] sidesZ = new int[6];
-            for (int i = 0; i < sides.Length; i++)
-            {
-                sidesZ[i] = sides[RotateSides(0, 0, z, i)];
-            }
-            for (int i = 0; i < sides.Length; i++)
-            {
-                sides[i] = sidesZ[i];
-            }
-        }
-
-
-
-        //X Rotation
-        if (x != 0)
-        {
-            int[] sidesX = new int[6];
-            for (int i = 0; i < sides.Length; i++)
-            {
-                sidesX[i] = sides[RotateSides(x, 0, 0, i)];
-            }
-            for (int i = 0; i < sides.Length; i++)
-            {
-                sides[i] = sidesX[i];
-            }
-        }
-
-        //Y Rotation
-        if (y != 0)
-        {
-            int[] sidesY = new int[6];
-            for (int i = 0; i < sides.Length; i++)
-            {
-                sidesY[i] = sides[RotateSides(0, y, 0, i)];
-            }
-            for (int i = 0; i < sides.Length; i++)
-            {
-                sides[i] = sidesY[i];
-            }
-        }
-
-        //return GetDirectionByNumber(sides[startDirectionNumber]);
-
-    }
-    //Returns index of rotation
-    protected int RotateSides(int x, int y, int z, int oDir)
-    {
-        if (z != 0)
-        {
-            if (z == 0)
-            {
-            }
-            if (z == 90)
-            {
-                switch (oDir)
-                {
-                    case 2:
-                        return 5; //Down
-
-                    case 3:
-                        return 4; //Up
-
-                    case 4:
-                        return 2; //East
-
-                    case 5:
-                        return 3; //West
-
-                    case 0:
-                        return 0; //North
-
-                    case 1:
-                        return 1; //South
-
-
-
-                }
-            }
-            if (z == 180)
-            {
-                switch (oDir)
-                {
-                    case 2:
-                        return 3; //West
-
-                    case 3:
-                        return 2; //East
-
-                    case 4:
-                        return 5; //Down
-
-                    case 5:
-                        return 4; //Up
-
-                    case 0:
-                        return 0; //North
-
-                    case 1:
-                        return 1; //South
-
-
-
-                }
-            }
-            if (z == 270)
-            {
-                switch (oDir)
-                {
-                    case 2:
-                        return 4; //Up
-
-                    case 3:
-                        return 5; //Down
-
-                    case 4:
-                        return 3; //West
-
-                    case 5:
-                        return 2; //East
-
-                    case 0:
-                        return 0; //North
-
-                    case 1:
-                        return 1; //South
-
-
-
-                }
-            }
-        }
-
-        if (x != 0)
-        {
-            if (x == 0)
-            {
-            }
-            if (x == 90)
-            {
-                switch (oDir)
-                {
-                    case 0:
-                        return 4; //Up
-
-                    case 1:
-                        return 5; //Down
-
-                    case 4:
-                        return 1; //South
-
-                    case 5:
-                        return 0; //North
-
-                    case 2:
-                        return 2; //East
-
-                    case 3:
-                        return 3; //West
-
-
-
-                }
-            }
-            if (x == 180)
-            {
-                switch (oDir)
-                {
-                    case 0:
-                        return 1; //South
-
-                    case 1:
-                        return 0; //North
-
-                    case 4:
-                        return 5; //Down
-
-                    case 5:
-                        return 4; //Up
-
-                    case 2:
-                        return 2; //East
-
-                    case 3:
-                        return 3; //West
-
-
-
-                }
-            }
-            if (x == 270)
-            {
-                switch (oDir)
-                {
-                    case 0:
-                        return 5; //Down
-
-                    case 1:
-                        return 4; //Up
-
-                    case 4:
-                        return 0; //North
-
-                    case 5:
-                        return 1; //South
-
-                    case 2:
-                        return 2; //East
-
-                    case 3:
-                        return 3; //West
-
-
-
-                }
-            }
-
-        }
-
-        if (y != 0)
-        {
-
-            if (y == 0)
-            {
-            }
-            if (y == 90)
-            {
-                switch (oDir)
-                {
-                    case 0:
-                        return 3; //West
-
-                    case 1:
-                        return 2; //East
-
-                    case 2:
-                        return 0; //North
-
-                    case 3:
-                        return 1; //South
-
-                    case 4:
-                        return 4; //Up
-
-                    case 5:
-                        return 5; //Down
-
-
-
-                }
-            }
-            if (y == 180)
-            {
-                switch (oDir)
-                {
-                    case 0:
-                        return 1; //South
-
-                    case 1:
-                        return 0; //North
-
-                    case 2:
-                        return 3; //West
-
-                    case 3:
-                        return 2; //East
-
-                    case 4:
-                        return 4; //Up
-
-                    case 5:
-                        return 5; //Down
-
-                }
-            }
-            if (y == 270)
-            {
-                switch (oDir)
-                {
-                    case 0:
-                        return 2; //East
-
-                    case 1:
-                        return 3; //West
-
-                    case 2:
-                        return 1; //South
-
-                    case 3:
-                        return 0; //North
-
-                    case 4:
-                        return 4; //Up
-
-                    case 5:
-                        return 5; //Down
-
-                }
-            }
-        }
-
-
-        return oDir;
-    }
-    */
 }
