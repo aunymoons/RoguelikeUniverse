@@ -1,7 +1,7 @@
-﻿/*
- Block.cs
- Class describe a cube information
- */
+/*
+Block.cs
+Class describe a cube information
+*/
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,6 +18,7 @@ public class Block
     public int cubeDirection; //24 possible positions for each block // change for boolean flips, its easier
 
     public Vector3 blockRotation;
+    Quaternion blockRotationQuaternion;
 
     public Vector3 blockPosition;
 
@@ -52,6 +53,7 @@ public class Block
     {
         blockColor = color;
         blockRotation = rotation;
+        blockRotationQuaternion = Quaternion.Euler(blockRotation);
 
         sides = new int[6];
         invertedDirections = new Direction[6];
@@ -339,10 +341,10 @@ public class Block
         (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
 
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
 
         meshData.AddQuadTriangles();
 
@@ -354,10 +356,10 @@ public class Block
     protected virtual MeshData FaceDataDown
          (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
 
         meshData.AddQuadTriangles();
 
@@ -370,10 +372,10 @@ public class Block
         (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
 
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
 
         meshData.AddQuadTriangles();
 
@@ -386,10 +388,10 @@ public class Block
         (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
 
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
 
         meshData.AddQuadTriangles();
 
@@ -402,10 +404,10 @@ public class Block
         (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
 
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
 
         meshData.AddQuadTriangles();
 
@@ -418,10 +420,10 @@ public class Block
         (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
 
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
-        meshData.AddVertex(Quaternion.Euler(blockRotation) * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
 
         meshData.AddQuadTriangles();
 
