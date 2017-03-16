@@ -89,7 +89,8 @@ public class Chunk : MonoBehaviour
         if (generateData)
         {
             generateData = false;
-            EZThread.ExecuteInBackground(GenerateChunkData);
+            GenerateChunkData();
+            //EZThread.ExecuteInBackground(GenerateChunkData);
         }
 
         if (renderMesh)
