@@ -10,6 +10,7 @@ public class World : MonoBehaviour
 
     //Dictionary of chunks
     public Dictionary<WorldPos, Chunk> chunks = new Dictionary<WorldPos, Chunk>();
+    public List<Vector3>[,] preloadedMeshes;
     public GameObject chunkPrefab;
 
     public Vector3 worldSize;
@@ -48,11 +49,66 @@ public class World : MonoBehaviour
             }
         }
         */
+
+        preloadedMeshes = new List<Vector3>[3, 6];
+
+        for(int type = 0; type < 3; type++)
+        {
+            for (int face = 0; face < 6; face++)
+            {
+                preloadedMeshes[type, face] = new List<Vector3>();
+            }
+
+        }
+
+        //Block
+
+        //North face
+        preloadedMeshes[1,0].Add(new Vector3( + 0.5f,  - 0.5f,  + 0.5f));
+        preloadedMeshes[1,0].Add(new Vector3( + 0.5f,  + 0.5f,  + 0.5f));
+        preloadedMeshes[1,0].Add(new Vector3( - 0.5f,  + 0.5f,  + 0.5f));
+        preloadedMeshes[1,0].Add(new Vector3( - 0.5f,  - 0.5f,  + 0.5f));
+
+        //South face
+        preloadedMeshes[1,1].Add(new Vector3( - 0.5f,  - 0.5f,  - 0.5f));
+        preloadedMeshes[1,1].Add(new Vector3( - 0.5f,  + 0.5f,  - 0.5f));
+        preloadedMeshes[1,1].Add(new Vector3( + 0.5f,  + 0.5f,  - 0.5f));
+        preloadedMeshes[1,1].Add(new Vector3( + 0.5f,  - 0.5f,  - 0.5f));
+
+        //East face
+        preloadedMeshes[1,2].Add(new Vector3( + 0.5f,  - 0.5f,  - 0.5f));
+        preloadedMeshes[1,2].Add(new Vector3( + 0.5f,  + 0.5f,  - 0.5f));
+        preloadedMeshes[1,2].Add(new Vector3( + 0.5f,  + 0.5f,  + 0.5f));
+        preloadedMeshes[1,2].Add(new Vector3( + 0.5f,  - 0.5f,  + 0.5f));
+
+        //West face
+        preloadedMeshes[1,3].Add(new Vector3( - 0.5f,  - 0.5f,  + 0.5f));
+        preloadedMeshes[1,3].Add(new Vector3( - 0.5f,  + 0.5f,  + 0.5f));
+        preloadedMeshes[1,3].Add(new Vector3( - 0.5f,  + 0.5f,  - 0.5f));
+        preloadedMeshes[1,3].Add(new Vector3( - 0.5f,  - 0.5f,  - 0.5f));
+
+        //Up face
+        preloadedMeshes[1,4].Add(new Vector3(-0.5f, +0.5f, +0.5f));
+        preloadedMeshes[1,4].Add(new Vector3(+0.5f, +0.5f, +0.5f));
+        preloadedMeshes[1,4].Add(new Vector3(+0.5f, +0.5f, -0.5f));
+        preloadedMeshes[1,4].Add(new Vector3(-0.5f, +0.5f, -0.5f));
+
+        //Down Face
+        preloadedMeshes[1,5].Add(new Vector3(-0.5f, -0.5f, -0.5f));
+        preloadedMeshes[1,5].Add(new Vector3(+0.5f, -0.5f, -0.5f));
+        preloadedMeshes[1,5].Add(new Vector3(+0.5f, -0.5f, +0.5f));
+        preloadedMeshes[1,5].Add(new Vector3(-0.5f, -0.5f, +0.5f));
+
+        Debug.Log(preloadedMeshes[1, 5].Count);
+
+        //PYRAMID
+
+
     }
 
-    
 
-    
+
+
 
     IEnumerator Test()
     {
@@ -61,7 +117,7 @@ public class World : MonoBehaviour
         yield return new WaitForSeconds(1f);
         generate = false;
         StartCoroutine(GenerateWorldCoroutine());
-        
+
     }
 
     IEnumerator GenerateWorldCoroutine()
@@ -76,10 +132,10 @@ public class World : MonoBehaviour
                 {
                     yield return delay;
                     CreateChunk(x * (Chunk.chunkSize), y * (Chunk.chunkSize), z * (Chunk.chunkSize));
-                    
+
                 }
             }
-            
+
         }
         /*
         //System.GC.Collect();
@@ -102,6 +158,8 @@ public class World : MonoBehaviour
         }
         //*/
         //System.GC.Collect();
+
+        Debug.Log(preloadedMeshes[1, 5].Count);
     }
 
     void GenerateWorld()
@@ -117,13 +175,13 @@ public class World : MonoBehaviour
             }
 
         }
-        
-        
+
+
         foreach (KeyValuePair<WorldPos, Chunk> c in chunks)
         {
             c.Value.generateData = true;
         }
-        
+
     }
 
 
@@ -136,7 +194,7 @@ public class World : MonoBehaviour
         {
             celAuto.Simulate();
         }
-        
+
     }
 
     /// <summary>
@@ -242,27 +300,27 @@ public class World : MonoBehaviour
                         SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white));
                    */
                     //PERFORMANCE TESTING RANDOM
-                        
-                        int rand = Random.Range(0, 3);
-                        if (rand == 1)
-                        {
-                            int thisx = Random.Range(0, 4) * 90;
-                            int thisy = Random.Range(0, 4) * 90;
-                            int thisz = Random.Range(0, 4) * 90;
-                            SetBlock(x + xi, y + yi, z + zi, new BlockPyramid(new Vector3(thisx, thisy, thisz), Random.ColorHSV()), false);
-                        }
-                        else if (rand == 2)
-                        {
-                            int thisx = Random.Range(0, 4) * 90;
-                            int thisy = Random.Range(0, 4) * 90;
-                            int thisz = Random.Range(0, 4) * 90;
-                            SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(thisx, thisy, thisz), Random.ColorHSV()), false);
-                        }
-                        else
-                        {
-                            SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white), false);
-                        }
-                        
+
+                    int rand = Random.Range(0, 3);
+                    if (rand == 1)
+                    {
+                        int thisx = Random.Range(0, 4) * 90;
+                        int thisy = Random.Range(0, 4) * 90;
+                        int thisz = Random.Range(0, 4) * 90;
+                        SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(thisx, thisy, thisz), Random.ColorHSV()), false);
+                    }
+                    else if (rand == 2)
+                    {
+                        int thisx = Random.Range(0, 4) * 90;
+                        int thisy = Random.Range(0, 4) * 90;
+                        int thisz = Random.Range(0, 4) * 90;
+                        SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(thisx, thisy, thisz), Random.ColorHSV()), false);
+                    }
+                    else
+                    {
+                        SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white), false);
+                    }
+
 
 
                 }

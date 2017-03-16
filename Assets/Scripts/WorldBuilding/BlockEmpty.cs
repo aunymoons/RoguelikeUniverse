@@ -11,6 +11,7 @@ public class BlockEmpty : Block {
     public BlockEmpty(Vector3 blockRotation, Color color)
          : base(blockRotation, color)
      {
+        blockID = 0;
     }
     public override MeshData Blockdata
         (Chunk chunk, int x, int y, int z, MeshData meshData)

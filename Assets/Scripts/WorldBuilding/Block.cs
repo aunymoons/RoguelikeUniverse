@@ -1,4 +1,4 @@
-/*
+﻿/*
 Block.cs
 Class describe a cube information
 */
@@ -18,7 +18,7 @@ public class Block
     public int cubeDirection; //24 possible positions for each block // change for boolean flips, its easier
 
     public Vector3 blockRotation;
-    Quaternion blockRotationQuaternion;
+    protected Quaternion blockRotationQuaternion;
 
     public Vector3 blockPosition;
 
@@ -35,6 +35,8 @@ public class Block
 
     //Flags
     public bool covered;
+
+    protected int blockID = 1;
 
 
     #endregion
@@ -340,11 +342,18 @@ public class Block
     protected virtual MeshData FaceDataUp
         (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
+        /*
+        for(int i = 0; i < chunk.world.preloadedMeshes[blockID,(int)Direction.up].Count; i++)
+        {
+            meshData.AddVertex(blockRotationQuaternion * ((blockPosition + chunk.world.preloadedMeshes[blockID, (int)Direction.up][i]) - blockPosition) + blockPosition, blockColor);
+        }
+        */
 
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
+        
 
         meshData.AddQuadTriangles();
 
@@ -356,10 +365,18 @@ public class Block
     protected virtual MeshData FaceDataDown
          (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
+        /*
+        for (int i = 0; i < chunk.world.preloadedMeshes[blockID, (int)Direction.down].Count; i++)
+        {
+            meshData.AddVertex(blockRotationQuaternion * ((blockPosition + chunk.world.preloadedMeshes[blockID, (int)Direction.down][i]) - blockPosition) + blockPosition, blockColor);
+        }
+        */
+
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
+        
 
         meshData.AddQuadTriangles();
 
@@ -370,13 +387,18 @@ public class Block
 
     protected virtual MeshData FaceDataNorth
         (Chunk chunk, int x, int y, int z, MeshData meshData)
-    {
+    {/*
+        for (int i = 0; i < chunk.world.preloadedMeshes[blockID, (int)Direction.north].Count; i++)
+        {
+            meshData.AddVertex(blockRotationQuaternion * ((blockPosition + chunk.world.preloadedMeshes[blockID, (int)Direction.north][i]) - blockPosition) + blockPosition, blockColor);
+        }
 
+        */
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
-
+        
         meshData.AddQuadTriangles();
 
         meshData.uv.AddRange(FaceUVs(Direction.north));
@@ -387,12 +409,17 @@ public class Block
     protected virtual MeshData FaceDataEast
         (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
-
+        /*
+        for (int i = 0; i < chunk.world.preloadedMeshes[blockID, (int)Direction.east].Count; i++)
+        {
+            meshData.AddVertex(blockRotationQuaternion * ((blockPosition + chunk.world.preloadedMeshes[blockID, (int)Direction.east][i]) - blockPosition) + blockPosition, blockColor);
+        }
+        */
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
-
+        
         meshData.AddQuadTriangles();
 
         meshData.uv.AddRange(FaceUVs(Direction.east));
@@ -403,12 +430,17 @@ public class Block
     protected virtual MeshData FaceDataSouth
         (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
-
+        /*
+        for (int i = 0; i < chunk.world.preloadedMeshes[blockID, (int)Direction.south].Count; i++)
+        {
+            meshData.AddVertex(blockRotationQuaternion * ((blockPosition + chunk.world.preloadedMeshes[blockID, (int)Direction.south][i]) - blockPosition) + blockPosition, blockColor);
+        }
+        */
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x + 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
-
+        
         meshData.AddQuadTriangles();
 
         meshData.uv.AddRange(FaceUVs(Direction.south));
@@ -419,12 +451,17 @@ public class Block
     protected virtual MeshData FaceDataWest
         (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
-
+        /*
+        for (int i = 0; i < chunk.world.preloadedMeshes[blockID, (int)Direction.west].Count; i++)
+        {
+            meshData.AddVertex(blockRotationQuaternion * ((blockPosition + chunk.world.preloadedMeshes[blockID, (int)Direction.west][i] - blockPosition)) + blockPosition, blockColor);
+        }
+        */
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y - 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y + 0.5f, z + 0.5f) - blockPosition) + blockPosition, blockColor);
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y + 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
         meshData.AddVertex(blockRotationQuaternion * (new Vector3(x - 0.5f, y - 0.5f, z - 0.5f) - blockPosition) + blockPosition, blockColor);
-
+        
         meshData.AddQuadTriangles();
 
         meshData.uv.AddRange(FaceUVs(Direction.west));
@@ -488,11 +525,18 @@ public class Block
     protected virtual MeshData ColFaceDataUp
          (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
+        /*
+        for (int i = 0; i < chunk.world.preloadedMeshes[blockID, (int)Direction.up].Count; i++)
+        {
+            meshData.AddColVertex(blockPosition  + chunk.world.preloadedMeshes[1, (int)Direction.up][i]);
+        }
+        */
 
         meshData.AddColVertex(new Vector3(x - 0.5f, y + 0.5f, z + 0.5f));
         meshData.AddColVertex(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f));
         meshData.AddColVertex(new Vector3(x + 0.5f, y + 0.5f, z - 0.5f));
         meshData.AddColVertex(new Vector3(x - 0.5f, y + 0.5f, z - 0.5f));
+        
 
         meshData.AddColQuadTriangles();
 
@@ -501,12 +545,17 @@ public class Block
 
     protected virtual MeshData ColFaceDataDown
          (Chunk chunk, float x, float y, float z, MeshData meshData)
-    {
+    {/*
+        for (int i = 0; i < chunk.world.preloadedMeshes[blockID, (int)Direction.down].Count; i++)
+        {
+            meshData.AddColVertex(blockPosition + chunk.world.preloadedMeshes[1, (int)Direction.down][i]);
+        }
+        */
         meshData.AddColVertex(new Vector3(x - 0.5f, y - 0.5f, z - 0.5f));
         meshData.AddColVertex(new Vector3(x + 0.5f, y - 0.5f, z - 0.5f));
         meshData.AddColVertex(new Vector3(x + 0.5f, y - 0.5f, z + 0.5f));
         meshData.AddColVertex(new Vector3(x - 0.5f, y - 0.5f, z + 0.5f));
-
+        
         meshData.AddColQuadTriangles();
 
         return meshData;
@@ -515,12 +564,18 @@ public class Block
     protected virtual MeshData ColFaceDataNorth
         (Chunk chunk, float x, float y, float z, MeshData meshData)
     {
-
-        meshData.AddColVertex(new Vector3(x + 0.5f, y - 0.5f, z + 0.5f));
+        /*
+        for (int i = 0; i < chunk.world.preloadedMeshes[blockID, (int)Direction.north].Count; i++)
+        {
+            meshData.AddColVertex(blockPosition + chunk.world.preloadedMeshes[1, (int)Direction.north][i]);
+        }
+        */
+        
+      meshData.AddColVertex(new Vector3(x + 0.5f, y - 0.5f, z + 0.5f));
         meshData.AddColVertex(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f));
         meshData.AddColVertex(new Vector3(x - 0.5f, y + 0.5f, z + 0.5f));
         meshData.AddColVertex(new Vector3(x - 0.5f, y - 0.5f, z + 0.5f));
-
+        
         meshData.AddColQuadTriangles();
 
         return meshData;
@@ -528,13 +583,17 @@ public class Block
 
     protected virtual MeshData ColFaceDataEast
         (Chunk chunk, float x, float y, float z, MeshData meshData)
-    {
-
+    {/*
+        for (int i = 0; i < chunk.world.preloadedMeshes[blockID, (int)Direction.east].Count; i++)
+        {
+            meshData.AddColVertex(blockPosition + chunk.world.preloadedMeshes[1, (int)Direction.east][i]);
+        }
+        */
         meshData.AddColVertex(new Vector3(x + 0.5f, y - 0.5f, z - 0.5f));
         meshData.AddColVertex(new Vector3(x + 0.5f, y + 0.5f, z - 0.5f));
         meshData.AddColVertex(new Vector3(x + 0.5f, y + 0.5f, z + 0.5f));
         meshData.AddColVertex(new Vector3(x + 0.5f, y - 0.5f, z + 0.5f));
-
+        
         meshData.AddColQuadTriangles();
 
         return meshData;
@@ -542,13 +601,17 @@ public class Block
 
     protected virtual MeshData ColFaceDataSouth
         (Chunk chunk, float x, float y, float z, MeshData meshData)
-    {
-
+    {/*
+        for (int i = 0; i < chunk.world.preloadedMeshes[blockID, (int)Direction.south].Count; i++)
+        {
+            meshData.AddColVertex(blockPosition + chunk.world.preloadedMeshes[1, (int)Direction.south][i]);
+        }
+        */
         meshData.AddColVertex(new Vector3(x - 0.5f, y - 0.5f, z - 0.5f));
         meshData.AddColVertex(new Vector3(x - 0.5f, y + 0.5f, z - 0.5f));
         meshData.AddColVertex(new Vector3(x + 0.5f, y + 0.5f, z - 0.5f));
         meshData.AddColVertex(new Vector3(x + 0.5f, y - 0.5f, z - 0.5f));
-
+        
         meshData.AddColQuadTriangles();
 
         return meshData;
@@ -556,13 +619,17 @@ public class Block
 
     protected virtual MeshData ColFaceDataWest
         (Chunk chunk, float x, float y, float z, MeshData meshData)
-    {
-
+    {/*
+        for (int i = 0; i < chunk.world.preloadedMeshes[blockID, (int)Direction.west].Count; i++)
+        {
+            meshData.AddColVertex(blockPosition + chunk.world.preloadedMeshes[1, (int)Direction.west][i]);
+        }
+        */
         meshData.AddColVertex(new Vector3(x - 0.5f, y - 0.5f, z + 0.5f));
         meshData.AddColVertex(new Vector3(x - 0.5f, y + 0.5f, z + 0.5f));
         meshData.AddColVertex(new Vector3(x - 0.5f, y + 0.5f, z - 0.5f));
         meshData.AddColVertex(new Vector3(x - 0.5f, y - 0.5f, z - 0.5f));
-
+        
         meshData.AddColQuadTriangles();
 
         return meshData;

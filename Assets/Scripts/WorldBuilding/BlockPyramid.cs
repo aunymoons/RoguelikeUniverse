@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,10 +7,12 @@ public class BlockPyramid : Block
 
     int faceCounter;
 
+   
 
     public BlockPyramid(Vector3 blockRotation, Color color)
          : base(blockRotation, color)
     {
+        blockID = 2;
         pieces = new bool[1];
     }
 
