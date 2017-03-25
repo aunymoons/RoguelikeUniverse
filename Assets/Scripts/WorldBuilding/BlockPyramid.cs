@@ -9,8 +9,8 @@ public class BlockPyramid : Block
 
    
 
-    public BlockPyramid(Vector3 blockRotation, Color color)
-         : base(blockRotation, color)
+    public BlockPyramid(Color color)
+         : base( color)
     {
         blockID = 2;
         pieces = new bool[1];
@@ -19,7 +19,7 @@ public class BlockPyramid : Block
     public override MeshData Blockdata
     (Chunk chunk, int x, int y, int z, MeshData meshData)
     {
-        ClearPieces();
+        //ClearPieces();
         return base.Blockdata(chunk, x, y, z, meshData);
     }
 

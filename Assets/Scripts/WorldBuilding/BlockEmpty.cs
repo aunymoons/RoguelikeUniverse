@@ -8,8 +8,8 @@ using UnityEngine;
 
 public class BlockEmpty : Block {
 
-    public BlockEmpty(Vector3 blockRotation, Color color)
-         : base(blockRotation, color)
+    public BlockEmpty(Color color)
+         : base(color)
      {
         blockID = 0;
     }

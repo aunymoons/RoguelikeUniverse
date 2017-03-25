@@ -204,6 +204,7 @@ public class Chunk : MonoBehaviour
         //Collision
         meshCollider.sharedMesh = null;
         Mesh mesh = new Mesh();
+        mesh.MarkDynamic();
         mesh.vertices = meshData.colVertices.ToArray();
         mesh.triangles = meshData.colTriangles.ToArray();
         mesh.RecalculateNormals();

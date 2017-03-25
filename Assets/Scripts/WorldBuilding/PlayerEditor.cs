@@ -15,7 +15,7 @@ public class PlayerEditor : MonoBehaviour {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit, 100f))
             {
-                Block tempBlock = new BlockPyramid(blockCreationController.currentRotation, blockCreationController.currentColor);
+                Block tempBlock = new BlockPyramid(blockCreationController.currentColor);
                 tempBlock.debugIsTrue = true;
                 WorldEditor.SetBlock(hit, tempBlock, true);
                 
@@ -28,7 +28,7 @@ public class PlayerEditor : MonoBehaviour {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit, 100f))
             {
-                WorldEditor.SetBlock(hit, new BlockEmpty(new Vector3(0, 0, 0), Color.white));
+                WorldEditor.SetBlock(hit, new BlockEmpty(Color.white));
 
             }
 
@@ -39,7 +39,7 @@ public class PlayerEditor : MonoBehaviour {
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			if (Physics.Raycast(ray, out hit, 100f))
 			{
-				WorldEditor.SetBlock(hit, new Block(new Vector3(0, 0, 0), Color.white),true);
+				WorldEditor.SetBlock(hit, new Block(Color.white),true);
 
 			}
 

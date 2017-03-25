@@ -25,7 +25,7 @@ public class World : MonoBehaviour
 
     void Awake()
     {
-        EZThread.ExecuteInBackground(PrecalculateRotations);
+        //EZThread.ExecuteInBackground(PrecalculateRotations);
         //PrecalculateRotations();
     }
 
@@ -49,7 +49,7 @@ public class World : MonoBehaviour
             }
         }
         */
-
+        /*
         preloadedMeshes = new List<Vector3>[3, 6];
 
         for(int type = 0; type < 3; type++)
@@ -102,7 +102,7 @@ public class World : MonoBehaviour
         Debug.Log(preloadedMeshes[1, 5].Count);
 
         //PYRAMID
-
+        */
 
     }
 
@@ -159,7 +159,7 @@ public class World : MonoBehaviour
         //*/
         //System.GC.Collect();
 
-        Debug.Log(preloadedMeshes[1, 5].Count);
+        //Debug.Log(preloadedMeshes[1, 5].Count);
     }
 
     void GenerateWorld()
@@ -235,29 +235,29 @@ public class World : MonoBehaviour
                 for (int zi = 0; zi < Chunk.chunkSize; zi++)
                 {
                     //CELLULAR AUTOMATION
-                    /*
+                    
                    if(yi > 0 || yi < 3)
                     {
 
                     
                         if (celAuto.cells[xi + (x + (((int)worldSize.x / 2) * Chunk.chunkSize)), zi + (z + (((int)worldSize.z / 2) * Chunk.chunkSize))] == CellState.Alive)
                         {
-                            SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(0, 0, 0), Color.red), false);
+                            SetBlock(x + xi, y + yi, z + zi, new Block( Color.red), false);
                         }
                         else
                         {
-                            SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white), false);
+                            SetBlock(x + xi, y + yi, z + zi, new BlockEmpty( Color.white), false);
                         }
                     }
                     if (yi == 0)
                     {
-                        SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(0, 0, 0), Color.white), false);
+                        SetBlock(x + xi, y + yi, z + zi, new Block(Color.white), false);
                     }
                     if(yi > 3)
                     {
-                        SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white), false);
+                        SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(Color.white), false);
                     }
-                    */
+                    
                     ///PERLIN NOISE VERSION 
                     /*
                     Vector2 pos = 0.05f * (new Vector2(xi + (x + ((int)worldSize.x * Chunk.chunkSize)), zi + (z + ((int)worldSize.z * Chunk.chunkSize)))) + new Vector2(0, 0);
@@ -300,27 +300,23 @@ public class World : MonoBehaviour
                         SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white));
                    */
                     //PERFORMANCE TESTING RANDOM
-
+                    /*
                     int rand = Random.Range(0, 3);
                     if (rand == 1)
                     {
                         int thisx = Random.Range(0, 4) * 90;
                         int thisy = Random.Range(0, 4) * 90;
                         int thisz = Random.Range(0, 4) * 90;
-                        SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(thisx, thisy, thisz), Random.ColorHSV()), false);
+                        SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(Color.white), false);
                     }
-                    else if (rand == 2)
+                    else 
                     {
                         int thisx = Random.Range(0, 4) * 90;
                         int thisy = Random.Range(0, 4) * 90;
                         int thisz = Random.Range(0, 4) * 90;
-                        SetBlock(x + xi, y + yi, z + zi, new Block(new Vector3(thisx, thisy, thisz), Random.ColorHSV()), false);
+                        SetBlock(x + xi, y + yi, z + zi, new Block(Random.ColorHSV()), false);
                     }
-                    else
-                    {
-                        SetBlock(x + xi, y + yi, z + zi, new BlockEmpty(new Vector3(0, 0, 0), Color.white), false);
-                    }
-
+                    */
 
 
                 }
@@ -372,7 +368,7 @@ public class World : MonoBehaviour
         }
         else
         {
-            return new BlockEmpty(new Vector3(0, 0, 0), Color.white);
+            return new BlockEmpty(Color.white);
         }
 
     }
