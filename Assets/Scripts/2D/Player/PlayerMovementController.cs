@@ -28,7 +28,7 @@ public class PlayerMovementController : MonoBehaviour {
         maxSpeed = curSpeed;
 
         // Mov
-        playerRigidbody.velocity = new Vector2(Mathf.Lerp(0, Input.GetAxis("Horizontal") * curSpeed, 0.8f), Mathf.Lerp(0, Input.GetAxis("Vertical") * curSpeed, 0.8f)); // * Time.deltaTime;
+        playerRigidbody.velocity = new Vector2(Mathf.Lerp(0, Input.GetAxis("Horizontal") * curSpeed, 0.8f ), Mathf.Lerp(0, Input.GetAxis("Vertical") * curSpeed, 0.8f)); // * Time.deltaTime;
     }
 
 
