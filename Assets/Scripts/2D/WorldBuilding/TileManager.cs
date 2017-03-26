@@ -20,8 +20,8 @@ public class TileManager : MonoBehaviour
     Vector2 playerPosition = new Vector2();
 
     //Pooling
-    int poolAmount = 1000;
-    int poolRadius = 50;
+    int poolAmount = 2000;
+    int poolRadius = 65;
     int poolThreshHold;
     List<GameObject> enabledTiles = new List<GameObject>();
     List<GameObject> disabledTiles = new List<GameObject>();
@@ -45,8 +45,8 @@ public class TileManager : MonoBehaviour
     {
         //Loads assets from resources
         spriteSheet = Resources.Load(spriteSheetName) as Texture2D;
-        spriteMaterial = Resources.Load("spriteMaterial") as Material;
-        tilePrefab = Resources.Load("Tile") as GameObject;
+        spriteMaterial = Resources.Load("Materials/SpriteMaterial") as Material;
+        tilePrefab = Resources.Load("Prefabs/Tile") as GameObject;
 
         //Initializes arrays and variables
         tileArray = new Tile[worldsize, worldsize, numberOfLevels];
