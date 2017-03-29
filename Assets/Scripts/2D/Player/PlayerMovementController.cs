@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
+using UnityEngine.Networking;
 
-public class PlayerMovementController : MonoBehaviour {
-
+public class PlayerMovementController : NetworkBehaviour {
+    
     private Rigidbody2D playerRigidbody;
     private float walkSpeed;
     private float sprintSpeed;
@@ -20,6 +21,7 @@ public class PlayerMovementController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
+        if(localPlayerAuthority)
         JoystickMovement();
 	}
 

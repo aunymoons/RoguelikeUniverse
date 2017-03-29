@@ -18,14 +18,15 @@ public class TileManager : MonoBehaviour
     Tile currentTile;
     public Transform targetPlayer;
     Vector2 playerPosition = new Vector2();
+    Vector2 lastPlayerPosition = new Vector2();
 
     //Pooling
-    int poolAmount = 2000;
-    int poolRadius = 65;
-    int poolThreshHold;
+    //int poolAmount = 800;
+    int poolRadius = 25;
+    //int poolThreshHold;
     List<GameObject> enabledTiles = new List<GameObject>();
     List<GameObject> disabledTiles = new List<GameObject>();
-   
+
 
     //Sprites
     List<Sprite> allSprites = new List<Sprite>();
@@ -51,40 +52,57 @@ public class TileManager : MonoBehaviour
         //Initializes arrays and variables
         tileArray = new Tile[worldsize, worldsize, numberOfLevels];
 
-        poolThreshHold = poolRadius / 3;
+        //poolThreshHold = poolRadius / 3;
 
         //Generates the tile sprites
         GenerateTileSprites();
 
         //Instantiate pooled sprites;
-        StartCoroutine(InstantiatePooledTiles());
-        
+        //StartCoroutine(InstantiatePooledTiles());
+
         //Celautomation generation
         StartCoroutine(GenerateCelAuto());
+
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (generate)
+        if (targetPlayer)
         {
-            celAuto.Simulate();
-        }
-        else if(updateTiles)
-        {
-            GenerateVisibletiles();
+            if (generate)
+            {
+                celAuto.Simulate();
+            }
+            else if (updateTiles)
+            {
+                playerPosition.x = Mathf.FloorToInt(targetPlayer.transform.position.x);
+                playerPosition.y = Mathf.FloorToInt(targetPlayer.transform.position.y);
+
+                //Updates only if player has switched tiles
+                if (lastPlayerPosition != playerPosition)
+                {
+                    lastPlayerPosition = playerPosition;
+                    GenerateVisibletiles();
+                    Debug.Log("changed");
+                }
+
+            }
         }
     }
 
     //Instantiate 
+    /*
     IEnumerator InstantiatePooledTiles()
     {
-        yield return delay;
         for (int i = 0; i <= poolAmount; i++)
         {
             disabledTiles.Add(Instantiate(tilePrefab));
         }
+        yield return delay;
     }
+    */
 
     /// <summary>
     /// Generates all sprites for tiles based on the loaded spritesheet and the tile resolution
@@ -104,9 +122,51 @@ public class TileManager : MonoBehaviour
 
     void GenerateVisibletiles()
     {
-        playerPosition.x = Mathf.FloorToInt(targetPlayer.transform.position.x);
-        playerPosition.y = Mathf.FloorToInt(targetPlayer.transform.position.y);
+        //playerPosition.x = Mathf.FloorToInt(targetPlayer.transform.position.x);
+        //playerPosition.y = Mathf.FloorToInt(targetPlayer.transform.position.y);
+        /*
+        if (enabledTiles.Count > 0)
+        {
+            GameObject[] enabledTilesCopy = new GameObject[enabledTiles.Count];
 
+            enabledTiles.CopyTo(enabledTilesCopy);
+
+            for (int i = 0; i < enabledTilesCopy.Length; i++)
+            //for (int i = enabledTilesCount - 1; i >= 0; i--)
+            //foreach (GameObject enabledTile in enabledTiles.ToArray())
+            {
+                //if out of range
+                
+                if (
+                    
+                    Mathf.Abs(enabledTilesCopy[i].transform.position.x) > Mathf.Abs(playerPosition.x + poolRadius)
+                    ||
+                    Mathf.Abs(enabledTilesCopy[i].transform.position.y) > Mathf.Abs(playerPosition.y + poolRadius)
+                    )
+                {
+                
+                    currentTile = tileArray[Mathf.FloorToInt(enabledTilesCopy[i].transform.position.x), Mathf.FloorToInt(enabledTilesCopy[i].transform.position.y), 0];
+
+                    if (currentTile.visible)
+                    {
+                        currentTile.visible = false;
+
+                        //currentTileGameObject = enabledTile;
+
+                        //Moves it to appropiate list
+                        enabledTiles.Remove(enabledTilesCopy[i]);
+                        disabledTiles.Add(enabledTilesCopy[i]);
+
+                        //Disables gameObject
+                        //currentTileGameObject.SetActive(false);
+
+                    }
+                }
+            }
+        }
+
+        Debug.Log(disabledTiles.Count);
+        */
 
         for (int x = -poolRadius; x <= poolRadius; x++)
         {
@@ -114,25 +174,25 @@ public class TileManager : MonoBehaviour
             {
 
                 //If exist inside world compared to player position
-                if((playerPosition.x + x) >= 0 && (playerPosition.x + x) < worldsize && (playerPosition.y + y) >= 0 && (playerPosition.y + y) < worldsize)
+                if ((playerPosition.x + x) >= 0 && (playerPosition.x + x) < worldsize && (playerPosition.y + y) >= 0 && (playerPosition.y + y) < worldsize)
                 {
                     //Grabs the reference to the tile object
                     currentTile = tileArray[((int)playerPosition.x + (int)x), ((int)playerPosition.y + (int)y), 0];
-                    
+
                     //If is inside range
-                    if(Mathf.Abs(x) < poolThreshHold && Mathf.Abs(y) < poolThreshHold)
+                    if (Mathf.Abs(x) < poolRadius - (poolRadius / 3) && Mathf.Abs(y) < poolRadius - (poolRadius / 3))
                     {
                         //if the current tile is not flagged as visible
                         if (!currentTile.visible)
                         {
                             //Marks it as visible
                             currentTile.visible = true;
-                        
-                            //Gets a tile from the disabled list
-                            currentTileGameObject = disabledTiles[0];
+
+                            //Gets a tile from the pool
+                            currentTileGameObject = Lean.LeanPool.Spawn(tilePrefab, new Vector3(((int)playerPosition.x + (int)x), ((int)playerPosition.y + (int)y), 0), Quaternion.identity);//disabledTiles[0];
 
                             //Assigns the tile to the appropiate position
-                            currentTileGameObject.transform.position = new Vector3(((int)playerPosition.x + (int)x), ((int)playerPosition.y + (int)y), 0);
+                            //currentTileGameObject.transform.position = new Vector3(((int)playerPosition.x + (int)x), ((int)playerPosition.y + (int)y), 0);
 
                             //Assigns the properties to the tile
 
@@ -140,26 +200,28 @@ public class TileManager : MonoBehaviour
                             currentTile.associatedTile = currentTileGameObject;
 
                             //Collider
-                            if (currentTile.propertyType == Tile.property.walkable)
+                            if (currentTile.propertyType == Tile.Property.walkable)
                             {
                                 currentTileGameObject.GetComponent<BoxCollider2D>().enabled = false;
                             }
-                            else{
+                            else
+                            {
                                 currentTileGameObject.GetComponent<BoxCollider2D>().enabled = true;
                             }
                             //Sprite type
                             currentTileGameObject.GetComponent<SpriteRenderer>().sprite = allSprites[currentTile.spriteType];
 
                             //Moves it to appropiate list
-                            disabledTiles.Remove(currentTileGameObject);
-                            enabledTiles.Add(currentTileGameObject);
+                            //disabledTiles.Remove(currentTileGameObject);
+                            //enabledTiles.Add(currentTileGameObject);
 
                             //Enables gameObject
-                            currentTileGameObject.SetActive(true);
-                        
+                            //currentTileGameObject.SetActive(true);
+
                         }
                     }
-                    
+
+
                     //If its outside range
                     else
                     {
@@ -171,72 +233,57 @@ public class TileManager : MonoBehaviour
 
                             currentTileGameObject = currentTile.associatedTile;
 
+                            Lean.LeanPool.Despawn(currentTileGameObject);
+
                             //Moves it to appropiate list
-                            enabledTiles.Remove(currentTileGameObject);
-                            disabledTiles.Add(currentTileGameObject);
+                            //enabledTiles.Remove(currentTileGameObject);
+                            //disabledTiles.Add(currentTileGameObject);
 
                             //Disables gameObject
-                            currentTileGameObject.SetActive(false);
+                            //currentTileGameObject.SetActive(false);
                         }
                     }
-                    
+
                 }
             }
         }
+
+        //Debug.Log(enabledTiles.Count);
+
     }
 
     IEnumerator GenerateCelAuto()
     {
-        celAuto = new CellularAutomaton(100 * Chunk.chunkSize, 100 * Chunk.chunkSize, Ruleset.majority, 0.5f, true);
+        celAuto = new CellularAutomaton(worldsize, worldsize, Ruleset.majority, 0.5f, true);
         generate = true;
         yield return new WaitForSeconds(1f);
         generate = false;
         StartCoroutine(GenerateWorld());
         yield return new WaitForSeconds(1f);
+        GenerateVisibletiles();
         updateTiles = true;
     }
 
 
     IEnumerator GenerateWorld()
     {
-        Tile tileToAdd;
 
         for (int x = 0; x < worldsize; x++)
         {
             for (int y = 0; y < worldsize; y++)
             {
-                /*
-                GameObject n = new GameObject();
-                
-                SpriteRenderer sr = n.AddComponent<SpriteRenderer>();
-                sr.material = mat;
-                sr.sortingLayerName = "Level1_below";
-                */
                 if (celAuto.cells[x, y] == CellState.Alive)
                 {
-                    tileToAdd = new Tile();
-
-                    tileToAdd.spriteType = 15;
-
-                    tileToAdd.propertyType = Tile.property.walkable;
-
-                    tileArray[x, y, 0] = tileToAdd;
+                    tileArray[x, y, 0] = new Tile(15, Tile.Property.walkable); ;
                 }
                 else
                 {
-                    tileToAdd = new Tile();
-
-                    tileToAdd.spriteType = 23;
-
-                    tileToAdd.propertyType = Tile.property.solid;
-
-                    tileArray[x, y, 0] = tileToAdd;
+                    tileArray[x, y, 0] = tileArray[x, y, 0] = new Tile(16, Tile.Property.solid); ;
                 }
-                
             }
             yield return delay;
         }
-        
+
     }
 
 }
