@@ -19,6 +19,9 @@ namespace Barebones.Networking
 
         private int _socketId = -1;
 
+        public event PeerActionHandler Connected;
+        public event PeerActionHandler Disconnected;
+
         public ServerSocketUnet() : this(BarebonesTopology.Topology)
         {
         }
@@ -31,9 +34,6 @@ namespace Barebones.Networking
             _msgBuffer = new byte[NetworkMessage.MaxMessageSize];
         }
 
-        public event Action<IPeer> OnConnected;
-        public event Action<IPeer> OnDisconnected;
-
         public void Listen(int port)
         {
 #if !UNITY_WEBGL || UNITY_EDITOR
@@ -41,6 +41,18 @@ namespace Barebones.Networking
             _socketId = NetworkTransport.AddHost(_topology, port);
             BmUpdateRunner.Instance.Add(this);
 #endif
+        }
+
+        public event PeerActionHandler OnConnected
+        {
+            add { Connected += value; }
+            remove { Connected -= value; }
+        }
+
+        public event PeerActionHandler OnDisconnected
+        {
+            add { Disconnected += value; }
+            remove { Disconnected -= value; }
         }
 
         public void Update()
@@ -95,8 +107,8 @@ namespace Barebones.Networking
             peer.SetIsConnected(false);
             peer.NotifyDisconnectEvent();
 
-            if (OnDisconnected != null)
-                OnDisconnected.Invoke(peer);
+            if (Disconnected != null)
+                Disconnected.Invoke(peer);
         }
 
         private void HandleData(int connectionId, int channelId, int receivedSize, byte error)
@@ -122,8 +134,8 @@ namespace Barebones.Networking
 
             peer.SetIsConnected(true);
 
-            if (OnConnected != null)
-                OnConnected.Invoke(peer);
+            if (Connected != null)
+                Connected.Invoke(peer);
         }
 
         public void Stop()

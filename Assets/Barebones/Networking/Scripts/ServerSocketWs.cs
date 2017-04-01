@@ -12,8 +12,8 @@ namespace Barebones.Networking
     /// </summary>
     public class ServerSocketWs : IServerSocket, IUpdatable
     {
-        public event Action<IPeer> OnConnected;
-        public event Action<IPeer> OnDisconnected;
+        public event PeerActionHandler Connected;
+        public event PeerActionHandler Disconnected;
 
         private WebSocketServer _server;
 
@@ -26,6 +26,18 @@ namespace Barebones.Networking
         public ServerSocketWs()
         {
             _executeOnUpdate = new Queue<Action>();
+        }
+
+        public event PeerActionHandler OnConnected
+        {
+            add { Connected += value; }
+            remove { Connected -= value; }
+        }
+
+        public event PeerActionHandler OnDisconnected
+        {
+            add { Disconnected += value; }
+            remove { Disconnected -= value; }
         }
 
         /// <summary>
@@ -79,11 +91,11 @@ namespace Barebones.Networking
                 {
                     BTimer.Instance.StartCoroutine(peer.SendDelayedMessages(_initialDelay));
 
-                    if (OnConnected != null)
-                        OnConnected.Invoke(peer);
+                    if (Connected != null)
+                        Connected.Invoke(peer);
                 });
 
-                peer.OnDisconnect += OnDisconnected;
+                peer.Disconnected += Disconnected;
 
                 service.OnCloseEvent += reason =>
                 {

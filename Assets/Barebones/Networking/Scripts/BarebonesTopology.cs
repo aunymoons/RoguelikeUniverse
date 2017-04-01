@@ -12,7 +12,7 @@ namespace Barebones.Networking
             ReliableSequencedChannel = config.AddChannel(QosType.ReliableSequenced);
 
             Topology = new HostTopology(config, 5000);
-            }
+        }
 
         public static HostTopology Topology { get; private set; }
 

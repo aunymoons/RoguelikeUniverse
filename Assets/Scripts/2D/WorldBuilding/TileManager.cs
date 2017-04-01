@@ -85,7 +85,6 @@ public class TileManager : MonoBehaviour
                 {
                     lastPlayerPosition = playerPosition;
                     GenerateVisibletiles();
-                    Debug.Log("changed");
                 }
 
             }
