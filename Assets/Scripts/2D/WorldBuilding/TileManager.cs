@@ -69,13 +69,14 @@ public class TileManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (targetPlayer)
-        {
+        
             if (generate)
             {
                 celAuto.Simulate();
             }
             else if (updateTiles)
+            {
+            if (targetPlayer)
             {
                 playerPosition.x = Mathf.FloorToInt(targetPlayer.transform.position.x);
                 playerPosition.y = Mathf.FloorToInt(targetPlayer.transform.position.y);
