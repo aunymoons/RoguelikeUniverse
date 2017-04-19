@@ -4,10 +4,28 @@ using UnityEngine;
 
 public class PlayerCameraController : MonoBehaviour {
     
-    public Transform targetTransform;
-    public float damping = 0.5f;
+    //References
+    Transform targetTransform;
+    public float damping = 0.8f;
     Vector3 offset = new Vector3(0, 0, -10);
-    public bool follow;
+    bool follow;
+    
+    public void SetCameraTarget(Transform target)
+    {
+        targetTransform = target;
+        StartCameraFollow();
+    }
+
+    public void StartCameraFollow()
+    {
+        follow = true;
+    }
+
+    public void StopCameraFollow()
+    {
+        follow = false;
+    }
+
    
 	// Use this for initialization
 	void Start () {
@@ -15,7 +33,7 @@ public class PlayerCameraController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if(follow)
+        if(follow && targetTransform)
         CameraMovement();
 	}
 

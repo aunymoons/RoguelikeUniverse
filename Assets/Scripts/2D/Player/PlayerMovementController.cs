@@ -34,16 +34,4 @@ public class PlayerMovementController : NetworkBehaviour {
         playerRigidbody.velocity = new Vector2(Mathf.Lerp(0, CrossPlatformInputManager.GetAxis("Horizontal") * curSpeed, 0.8f ), Mathf.Lerp(0, CrossPlatformInputManager.GetAxis("Vertical") * curSpeed, 0.8f)); // * Time.deltaTime;
     }
 
-
-    public class PlayerMovements : MonoBehaviour
-    {
-        // Normal Movements Variables
-        
-
-
-
-        
-    }
-
-
 }
