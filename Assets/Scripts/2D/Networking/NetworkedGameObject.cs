@@ -1,12 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class WeaponObject : NetworkedGameObject {
+public class NetworkedGameObject : NetworkBehaviour {
 
-	//Resources
-	GameObject bulletPrefab;
-    
 	// Use this for initialization
 	void Start () {
 		
