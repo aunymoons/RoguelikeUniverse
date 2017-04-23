@@ -14,4 +14,5 @@ public class NetworkedGameObject : NetworkBehaviour {
 	void Update () {
 		
 	}
+
 }

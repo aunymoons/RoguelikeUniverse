@@ -10,7 +10,7 @@ public class Manager : MonoBehaviour {
     protected Texture2D spriteSheet;
 
     //Sprites
-    protected List<Sprite> allSprites = new List<Sprite>();
+    public List<Sprite> allSprites = new List<Sprite>();
     protected Material spriteMaterial;
     protected Sprite newSprite;
 

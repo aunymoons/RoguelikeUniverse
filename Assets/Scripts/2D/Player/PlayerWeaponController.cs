@@ -1,12 +1,25 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Networking;
 using UnityStandardAssets.CrossPlatformInput;
 
 public class PlayerWeaponController : PlayerComponentController
 {
 
+    //Events
+
+    //Events
+    public delegate void UpdateWeaponAnswerCallback(Vector3 targetPosition, Weapon targetWeapon);
+
+    public static event UpdateWeaponAnswerCallback OnUpdateWeapon;
+
+    public void UpdateWeapon(Vector3 targetPosition, Weapon targetWeapon)
+    {
+           OnUpdateWeapon(targetPosition, targetWeapon);
+    }
+    
     public GameObject weaponHolder, bulletPrefab;
     public Transform bulletSpawnTransform;
 
@@ -19,7 +32,10 @@ public class PlayerWeaponController : PlayerComponentController
     // Update is called once per frame
     protected override void Update()
     {
-
+        if (CrossPlatformInputManager.GetButtonDown("Jump"))
+        {
+            UpdateWeapon(new Vector3(0,2,0), new Weapon(15, "anotherweapon" , new Vector3(0,2,0)));
+        }
         CmdShoot();
         RotationMovementHandler();
     }
@@ -57,5 +73,7 @@ public class PlayerWeaponController : PlayerComponentController
     {
 
     }
+
+   
 
 }

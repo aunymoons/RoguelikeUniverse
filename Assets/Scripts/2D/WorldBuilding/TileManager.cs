@@ -110,11 +110,11 @@ public class TileManager : Manager
             {
                 if (celAuto.cells[x, y] == CellState.Alive)
                 {
-                    tileArray[x, y, 0] = new Tile(15, Tile.Property.walkable); ;
+                    tileArray[x, y, 0] = new Tile(15, Tile.Property.walkable, new Vector3(x,y,0)); ;
                 }
                 else
                 {
-                    tileArray[x, y, 0] = tileArray[x, y, 0] = new Tile(16, Tile.Property.solid); ;
+                    tileArray[x, y, 0] = tileArray[x, y, 0] = new Tile(16, Tile.Property.solid, new Vector3(x, y, 0)); ;
                 }
             }
             yield return delay;
