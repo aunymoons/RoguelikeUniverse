@@ -8,7 +8,7 @@ public class PlayerWeaponController : PlayerComponentController
 {
 
     public GameObject weaponHolder, bulletPrefab;
-    Transform bulletSpawnTransform;
+    public Transform bulletSpawnTransform;
 
     // Use this for initialization
     protected override void Start()
@@ -46,7 +46,7 @@ public class PlayerWeaponController : PlayerComponentController
             var bullet = (GameObject)Instantiate(bulletPrefab, bulletSpawnTransform.position, bulletSpawnTransform.rotation);
 
             // Add velocity to the bullet
-            bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 6;
+            bullet.GetComponent<Rigidbody2D>().velocity = bullet.transform.right * 6;
 
             // Spawn the bullet on the Clients
             NetworkServer.Spawn(bullet);
