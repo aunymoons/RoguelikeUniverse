@@ -1,16 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class PlayerItemController : MonoBehaviour {
+public class PlayerItemController : PlayerComponentController
+{
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    protected override void Start () {
 		
 	}
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    protected override void Update () {
 		
 	}
 }

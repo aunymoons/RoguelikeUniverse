@@ -3,33 +3,33 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class PlayerMainController : NetworkBehaviour {
+public class PlayerMainController : PlayerComponentController
+{
 
     //Prefabs
     WorldController worldController;
     public GameObject cameraPrefab;
 
 	// Use this for initialization
-	void Start () {
+	protected override void Start () {
 
         if (!worldController) worldController = FindObjectOfType<WorldController>();;
 
-        if (hasAuthority)
-        {
-            InstantiateCamera();
-            SetTargetWorld();
-        }
-
+        InstantiateCamera();
+        SetTargetWorld();
+        
 	}
-
-    void SetTargetWorld()
-    {
-        worldController.SetTarget(this.transform);
-    }
 
     void InstantiateCamera()
     {
         GameObject camera = Instantiate(cameraPrefab) as GameObject;
         camera.GetComponent<PlayerCameraController>().SetCameraTarget(this.transform);
     }
+
+    void SetTargetWorld()
+    {
+        worldController.SetTarget(this.transform);
+    }
+
+
 }
