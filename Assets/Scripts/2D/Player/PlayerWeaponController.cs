@@ -116,12 +116,12 @@ public class PlayerWeaponController : PlayerComponentController
                 if (currentWeapon == null)
                 {
                     //Update it to null
-                    UpdateWeapon(closestWeaponObject.weaponReference.indexPosition, null);
+                    //UpdateWeapon(closestWeaponObject.weaponReference.indexPosition, null);
                 }
                 else
                 {
                     //Update it to our current weapon
-                    UpdateWeapon(closestWeaponObject.weaponReference.indexPosition, currentWeapon);
+                    //UpdateWeapon(closestWeaponObject.weaponReference.indexPosition, currentWeapon);
                 }
                 
                 //Equips the cloned weapon
