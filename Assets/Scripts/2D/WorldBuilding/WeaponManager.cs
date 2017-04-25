@@ -118,6 +118,7 @@ public class WeaponManager : Manager
                 //updates the associated GameObject values
                 weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].associatedWeapon.UpdateSprite(allSprites[weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].spriteType]);
                 weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].associatedWeapon.UpdateName(targetWeapon.weaponName);
+                weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].associatedWeapon.UpdateWeaponReference(targetWeapon);
             }
             else
             {
