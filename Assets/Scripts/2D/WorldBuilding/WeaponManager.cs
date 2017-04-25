@@ -111,14 +111,16 @@ public class WeaponManager : Manager
             {
                 //Passes the GameObject to the next place
                 targetWeapon.associatedWeapon = weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].associatedWeapon;
-
+                
+                //updates the associated GameObject values
+                targetWeapon.associatedWeapon.UpdateSprite(allSprites[targetWeapon.spriteType]);
+                targetWeapon.associatedWeapon.UpdateName(targetWeapon.weaponName);
+                targetWeapon.associatedWeapon.UpdateWeaponReference(targetWeapon);
+                
                 //Updates the weapon array
                 weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z] = targetWeapon;
 
-                //updates the associated GameObject values
-                weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].associatedWeapon.UpdateSprite(allSprites[weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].spriteType]);
-                weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].associatedWeapon.UpdateName(targetWeapon.weaponName);
-                weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].associatedWeapon.UpdateWeaponReference(targetWeapon);
+                
             }
             else
             {
