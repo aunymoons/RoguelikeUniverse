@@ -7,42 +7,40 @@ using UnityStandardAssets.CrossPlatformInput;
 
 public class PlayerWeaponController : PlayerComponentController
 {
-
-    //Events
-
     //Events
     public delegate void UpdateWeaponAnswerCallback(Vector3 targetPosition, Weapon targetWeapon);
-
     public static event UpdateWeaponAnswerCallback OnUpdateWeapon;
 
-    public void UpdateWeapon(Vector3 targetPosition, Weapon targetWeapon)
-    {
-           OnUpdateWeapon(targetPosition, targetWeapon);
-    }
-    
+    //References
     public GameObject weaponHolder, bulletPrefab;
     public Transform bulletSpawnTransform;
+
+    //Pickup
+    Weapon currentWeapon, tempWeapon;
+    List<WeaponObject> weaponsInRange;
+
+    //UI
+    public SpriteRenderer weaponSprite;
 
     // Use this for initialization
     protected override void Start()
     {
+        //TODO: remove this, testing only
+        EquipWeapon(new Weapon(15, "whatever"));
 
+        weaponsInRange = new List<WeaponObject>();
     }
 
     // Update is called once per frame
     protected override void Update()
     {
-        if (CrossPlatformInputManager.GetButtonDown("Jump"))
-        {
-            UpdateWeapon(new Vector3(0,2,0), new Weapon(15, "anotherweapon" , new Vector3(0,2,0)));
-        }
         CmdShoot();
         RotationMovementHandler();
+        SwitchWeapon();
     }
 
     void RotationMovementHandler()
     {
-
         // Get a Directional Vector from the Joystick input / offset from center
         Vector3 targetDirection = new Vector3(CrossPlatformInputManager.GetAxis("Horizontal"), CrossPlatformInputManager.GetAxis("Vertical"));
 
@@ -69,11 +67,97 @@ public class PlayerWeaponController : PlayerComponentController
         }
     }
 
-    void SwitchWeapon()
+    void EquipWeapon(Weapon weaponToEquip)
     {
+        currentWeapon = weaponToEquip;
+
+        //Update spriteRenderer
+        weaponSprite.sprite = WeaponManager.weaponSprites[currentWeapon.spriteType];
+
+        //TODO: Update other weapon variables 
+
+
 
     }
 
-   
+    void SwitchWeapon()
+    {
+        //Checks for button press
+        if (CrossPlatformInputManager.GetButtonDown("Jump"))
+        {
+            //Checks if there is any weapon around
+            if(weaponsInRange.Count > 0)
+            {
+                //Get the closest weapon
+                float shortestDistance = Mathf.Infinity;
+                float currentDistance;
+                WeaponObject closestWeapon = null;
+                for(int i = 0; i < weaponsInRange.Count; i++)
+                {
+                    currentDistance = Vector3.Distance(weaponsInRange[i].transform.position, transform.position);
+                    if ( currentDistance < shortestDistance)
+                    {
+                        shortestDistance = currentDistance;
+                        closestWeapon = weaponsInRange[i];
+                    }
+                }
+
+                Weapon ourWeapon = new Weapon(currentWeapon.spriteType, currentWeapon.weaponName);
+                Weapon theirWeapon = new Weapon(closestWeapon.weaponReference.spriteType, closestWeapon.weaponReference.weaponName);
+
+                //Get the weapon we are supposed to hold;
+                //if (closestWeapon)
+                //tempWeapon = new Weapon(closestWeapon.weaponReference.spriteType, closestWeapon.weaponReference.weaponName);
+
+
+
+                //If we have a weapon
+                if (currentWeapon == null)
+                {
+                    //Update it to null
+                    UpdateWeapon(closestWeapon.weaponReference.indexPosition, null);
+                }
+                else
+                {
+                    //Update it to our current weapon
+                    UpdateWeapon(closestWeapon.weaponReference.indexPosition, ourWeapon);   
+                }
+
+                //equip the weapon
+                EquipWeapon(theirWeapon);
+                
+            }
+            //UpdateWeapon(new Vector3(0, 2, 0), new Weapon(15, "anotherweapon", new Vector3(0, 2, 0)));
+        }
+    }
+
+    public void UpdateWeapon(Vector3 targetPosition, Weapon targetWeapon)
+    {
+        OnUpdateWeapon(targetPosition, targetWeapon);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        WeaponObject triggerEnterWeapon = collision.GetComponent<WeaponObject>();
+        if (triggerEnterWeapon)
+        {
+            if (!weaponsInRange.Contains(triggerEnterWeapon))
+            {
+                weaponsInRange.Add(triggerEnterWeapon);
+            }
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        WeaponObject triggerExitWeapon = collision.GetComponent<WeaponObject>();
+        if (triggerExitWeapon)
+        {
+            if (weaponsInRange.Contains(triggerExitWeapon))
+            {
+                weaponsInRange.Remove(triggerExitWeapon);
+            }
+        }
+    }
 
 }

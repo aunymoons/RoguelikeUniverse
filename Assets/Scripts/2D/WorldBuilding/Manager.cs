@@ -35,7 +35,7 @@ public class Manager : MonoBehaviour {
     /// <summary>
     /// Generates all sprites for tiles based on the loaded spritesheet and the tile resolution
     /// </summary>
-    protected void GenerateAllSprites()
+    protected virtual void GenerateAllSprites()
     {
         for (int x = 0; x < spriteSheet.width / squareResolution; x++)
         {

@@ -5,7 +5,8 @@ using UnityEngine.Events;
 
 public class WeaponManager : Manager
 {
-
+    //Sprites
+    static public List<Sprite> weaponSprites;
     //Setup
     Weapon[,,] weaponArray;
 
@@ -40,12 +41,23 @@ public class WeaponManager : Manager
         weaponArray = new Weapon[WorldController.worldsize, WorldController.worldsize, WorldController.numberOfLevels];
 
         weaponArray[0, 2, 0] = new Weapon(4, "weapon1", new Vector3(0, 2, 0));
+        
     }
 
     // Update is called once per frame
     void Update()
     {
 
+    }
+
+    //Makes sprites static
+    protected override void GenerateAllSprites()
+    {
+        base.GenerateAllSprites();
+
+        //Assigns sprites
+        weaponSprites = new List<Sprite>();
+        weaponSprites.AddRange(allSprites);
     }
 
     public override void SpawnObject(int targetX, int targetY, int targetZ)
@@ -93,25 +105,29 @@ public class WeaponManager : Manager
 
     void UpdateWeapon(Vector3 targetPosition, Weapon targetWeapon)
     {
-        Debug.Log("vector3 " + targetPosition + " " + targetWeapon);
-
-        //Weapon currentUpdateWeapon = weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z];
-
-        if (weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z] != null)
+        if (targetWeapon != null)
         {
-            //Passes the GameObject to the next place
-            targetWeapon.associatedWeapon = weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].associatedWeapon;
+            if (weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z] != null)
+            {
+                //Passes the GameObject to the next place
+                targetWeapon.associatedWeapon = weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].associatedWeapon;
 
-            //Updates the weapon array
-            weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z] = targetWeapon;
+                //Updates the weapon array
+                weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z] = targetWeapon;
 
-            //updates the associated GameObject values
-            weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].associatedWeapon.UpdateSprite(allSprites[weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].spriteType]);
-            weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].associatedWeapon.UpdateName(targetWeapon.weaponName);
+                //updates the associated GameObject values
+                weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].associatedWeapon.UpdateSprite(allSprites[weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].spriteType]);
+                weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].associatedWeapon.UpdateName(targetWeapon.weaponName);
+            }
+            else
+            {
+                Debug.LogError("The target weapon in the weapon array is null");
+            }
         }
         else
         {
-            Debug.LogError("The target weapon in the weapon array is null");
+            Destroy(weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].associatedWeapon);
+            weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z] = null;
         }
     }
 }
