@@ -110,6 +110,8 @@ public class WeaponManager : Manager
             if (weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z] != null)
             {
                 Weapon newWeapon = targetWeapon.Clone();
+                
+                newWeapon.indexPosition = targetPosition;
             
                 //Passes the GameObject to the next place
                 newWeapon.associatedWeapon = weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].associatedWeapon;
