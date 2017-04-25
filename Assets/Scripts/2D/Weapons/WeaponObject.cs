@@ -34,4 +34,9 @@ public class WeaponObject : NetworkedGameObject {
         //Change the name
         nameLabel.text = targetName;
     }
+	
+    public void UpdateWeaponReference(Weapon targetWeapon)
+    {
+    	weaponReference = targetWeapon;
+    }
 }
