@@ -5,8 +5,8 @@ using UnityEngine;
 public class Weapon {
     
     public byte spriteType;
-    public enum WeaponType { plasma = 0, nitrogen = 1, electricity = 2, acid = 3, water = 4 }
     public Vector3 indexPosition;
+    public enum WeaponType { plasma = 0, nitrogen = 1, electricity = 2, acid = 3, water = 4 }
     public WeaponType weaponType;
     public WeaponObject associatedWeapon;
     public string weaponName;
@@ -27,4 +27,10 @@ public class Weapon {
         indexPosition = indexPos;
         weaponName = targetName;
     }
+    
+    public Weapon Clone()
+    {
+           return new Weapon(spriteType, weaponName);
+    }
+    
 }
