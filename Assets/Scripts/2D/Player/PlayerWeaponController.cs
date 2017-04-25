@@ -81,7 +81,7 @@ public class PlayerWeaponController : PlayerComponentController
 
     }
     
-    void WeaponObject GetClosestWeaponObject()
+    WeaponObject GetClosestWeaponObject()
     {
         //Get the closest weapon
         float shortestDistance = Mathf.Infinity;
@@ -108,7 +108,7 @@ public class PlayerWeaponController : PlayerComponentController
             if(weaponsInRange.Count > 0)
             {
                 //Gets the closest weapon
-                Weapon closestWeaponObject = GetClosestWeaponObject();
+                WeaponObject closestWeaponObject = GetClosestWeaponObject();
                 //Clones the weapon he has found
                 tempWeapon = closestWeaponObject.weaponReference.Clone();
                 
