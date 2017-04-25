@@ -30,7 +30,7 @@ public class Weapon {
     
     public Weapon Clone()
     {
-           return new Weapon(spriteType, weaponName);
+           return new Weapon(spriteType, weaponName, indexPosition, associatedWeapon);
     }
     
 }
