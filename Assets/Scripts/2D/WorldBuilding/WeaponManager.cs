@@ -42,7 +42,7 @@ public class WeaponManager : Manager
 
         weaponArray[0, 2, 0] = new Weapon(4, "weapon1", new Vector3(0, 2, 0));
         weaponArray[0, 8, 0] = new Weapon(18, "weapon2", new Vector3(0, 8, 0));
-        weaponArray[0, 12, 0] = new Weapon(32, "weapon3", new Vector3(0, 12, 0));
+        weaponArray[0, 9, 0] = new Weapon(32, "weapon3", new Vector3(0, 12, 0));
         
     }
 
