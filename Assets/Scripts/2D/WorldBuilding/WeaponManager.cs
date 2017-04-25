@@ -109,16 +109,18 @@ public class WeaponManager : Manager
         {
             if (weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z] != null)
             {
+                Weapon newWeapon = targetWeapon.Clone();
+            
                 //Passes the GameObject to the next place
-                targetWeapon.associatedWeapon = weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].associatedWeapon;
+                newWeapon.associatedWeapon = weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].associatedWeapon;
                 
                 //updates the associated GameObject values
-                targetWeapon.associatedWeapon.UpdateSprite(allSprites[targetWeapon.spriteType]);
-                targetWeapon.associatedWeapon.UpdateName(targetWeapon.weaponName);
-                targetWeapon.associatedWeapon.UpdateWeaponReference(targetWeapon);
+                newWeapon.associatedWeapon.UpdateSprite(allSprites[targetWeapon.spriteType]);
+                newWeapon.associatedWeapon.UpdateName(targetWeapon.weaponName);
+                newWeapon.associatedWeapon.UpdateWeaponReference(targetWeapon);
                 
                 //Updates the weapon array
-                weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z] = targetWeapon;
+                weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z] = newWeapon;
 
                 
             }
