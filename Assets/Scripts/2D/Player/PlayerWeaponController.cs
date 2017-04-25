@@ -36,7 +36,8 @@ public class PlayerWeaponController : PlayerComponentController
     {
         CmdShoot();
         RotationMovementHandler();
-        SwitchWeapon();
+        //SwitchWeapon();
+        PickupWeapon();
     }
 
     void RotationMovementHandler()
@@ -79,6 +80,60 @@ public class PlayerWeaponController : PlayerComponentController
 
 
     }
+    
+    void WeaponObject GetClosestWeaponObject()
+    {
+        //Get the closest weapon
+        float shortestDistance = Mathf.Infinity;
+        float currentDistance;
+        WeaponObject closestWeaponObject = null;
+        for(int i = 0; i < weaponsInRange.Count; i++)
+        {
+            currentDistance = Vector3.Distance(weaponsInRange[i].transform.position, transform.position);
+            if ( currentDistance < shortestDistance)
+            {
+                shortestDistance = currentDistance;
+                closestWeaponObject = weaponsInRange[i];
+            }
+        }
+        return closestWeaponObject;
+    }
+    
+    void PickupWeapon()
+    {
+        //Checks for button press
+        if (CrossPlatformInputManager.GetButtonDown("Jump"))
+        {
+            //Checks if there is any weapon around
+            if(weaponsInRange.Count > 0)
+            {
+                //Gets the closest weapon
+                Weapon closestWeaponObject = GetClosestWeaponObject();
+                //Clones the weapon he has found
+                tempWeapon = closestWeaponObject.weaponReference.Clone();
+                
+                //If we dont have a weapon
+                if (currentWeapon == null)
+                {
+                    //Update it to null
+                    UpdateWeapon(closestWeaponObject.weaponReference.indexPosition, null);
+                }
+                else
+                {
+                    //Update it to our current weapon
+                    UpdateWeapon(closestWeaponObject.weaponReference.indexPosition, currentWeapon);
+                }
+                
+                //Equips the cloned weapon
+                EquipWeapon(tempWeapon);
+                    
+                
+            
+            }
+        }
+    }
+    
+
 
     void SwitchWeapon()
     {
@@ -111,7 +166,7 @@ public class PlayerWeaponController : PlayerComponentController
 
 
 
-                //If we have a weapon
+                //If we dont have a weapon
                 if (currentWeapon == null)
                 {
                     //Update it to null
