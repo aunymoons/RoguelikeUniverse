@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Networking;
 
 public class WeaponManager : Manager
 {
@@ -42,7 +43,7 @@ public class WeaponManager : Manager
 
         weaponArray[0, 2, 0] = new Weapon(4, "weapon1", new Vector3(0, 2, 0));
         weaponArray[0, 8, 0] = new Weapon(18, "weapon2", new Vector3(0, 8, 0));
-        weaponArray[0, 9, 0] = new Weapon(32, "weapon3", new Vector3(0, 12, 0));
+        weaponArray[0, 9, 0] = new Weapon(32, "weapon3", new Vector3(0, 9, 0));
         
     }
 
@@ -82,7 +83,7 @@ public class WeaponManager : Manager
             currentSpawnWeaponObject.UpdateName(currentSpawnWeapon.weaponName);
 
             currentSpawnWeapon.associatedWeapon = currentSpawnWeaponObject;
-
+            
         }
     }
 
@@ -121,12 +122,14 @@ public class WeaponManager : Manager
                 //updates the associated GameObject values
                 newWeapon.associatedWeapon.UpdateSprite(allSprites[targetWeapon.spriteType]);
                 newWeapon.associatedWeapon.UpdateName(targetWeapon.weaponName);
-                newWeapon.associatedWeapon.UpdateWeaponReference(targetWeapon);
+                newWeapon.associatedWeapon.UpdateWeaponReference(newWeapon);
                 
                 //Updates the weapon array
                 weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z] = newWeapon;
 
-                
+                Debug.Log(weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].weaponName);
+
+
             }
             else
             {
@@ -135,7 +138,8 @@ public class WeaponManager : Manager
         }
         else
         {
-            Destroy(weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z].associatedWeapon);
+            Debug.Log("destroyed object");
+            DeSpawnObject((int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z);
             weaponArray[(int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z] = null;
         }
     }

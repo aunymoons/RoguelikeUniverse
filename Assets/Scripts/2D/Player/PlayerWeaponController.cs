@@ -25,8 +25,12 @@ public class PlayerWeaponController : PlayerComponentController
     // Use this for initialization
     protected override void Start()
     {
+        base.Start();
+
+        if (!isLocalPlayer) return;
+
         //TODO: remove this, testing only
-        EquipWeapon(new Weapon(15, "whatever"));
+        //EquipWeapon(new Weapon(15, "whatever"));
 
         weaponsInRange = new List<WeaponObject>();
     }
@@ -34,7 +38,16 @@ public class PlayerWeaponController : PlayerComponentController
     // Update is called once per frame
     protected override void Update()
     {
-        CmdShoot();
+        base.Update();
+
+        if (!isLocalPlayer) return;
+
+
+        if (CrossPlatformInputManager.GetButtonDown("Shoot"))
+        {
+            CmdShoot();
+        }
+
         RotationMovementHandler();
         //SwitchWeapon();
         PickupWeapon();
@@ -42,30 +55,52 @@ public class PlayerWeaponController : PlayerComponentController
 
     void RotationMovementHandler()
     {
-        // Get a Directional Vector from the Joystick input / offset from center
-        Vector3 targetDirection = new Vector3(CrossPlatformInputManager.GetAxis("Horizontal"), CrossPlatformInputManager.GetAxis("Vertical"));
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 targetDirection = new Vector3(transform.position.x - mousePos.x, transform.position.y - mousePos.y, transform.position.z);
+        //weaponHolder.transform.LookAt(direction);
+
+        targetDirection.Normalize();
 
         if (targetDirection != Vector3.zero)
         {
-            float angle = Mathf.Atan2(targetDirection.y, targetDirection.x) * Mathf.Rad2Deg;
+            float angle = Mathf.Atan2(-targetDirection.y, -targetDirection.x) * Mathf.Rad2Deg;
             weaponHolder.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         }
+
+        //If joysticks are available
+        /*
+        if (Input.GetJoystickNames().Length > 0)
+        {
+            // Get a Directional Vector from the Joystick input / offset from center
+            Vector3 targetDirection = new Vector3(CrossPlatformInputManager.GetAxis("Horizontal"), CrossPlatformInputManager.GetAxis("Vertical"));
+
+            if (targetDirection != Vector3.zero)
+            {
+                float angle = Mathf.Atan2(targetDirection.y, targetDirection.x) * Mathf.Rad2Deg;
+                weaponHolder.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+            }
+        }
+        //if not
+        else
+        {
+            
+        }
+        */
     }
 
     [Command]
     void CmdShoot()
     {
-        if (CrossPlatformInputManager.GetButtonDown("Shoot"))
-        {
-            // Create the Bullet from the Bullet Prefab
-            var bullet = (GameObject)Instantiate(bulletPrefab, bulletSpawnTransform.position, bulletSpawnTransform.rotation);
 
-            // Add velocity to the bullet
-            bullet.GetComponent<Rigidbody2D>().velocity = bullet.transform.right * 6;
+        // Create the Bullet from the Bullet Prefab
+        var bullet = (GameObject)Instantiate(bulletPrefab, bulletSpawnTransform.position, bulletSpawnTransform.rotation);
 
-            // Spawn the bullet on the Clients
-            NetworkServer.Spawn(bullet);
-        }
+        // Add velocity to the bullet
+        bullet.GetComponent<Rigidbody2D>().velocity = bullet.transform.right * 20;
+
+        // Spawn the bullet on the Clients
+        NetworkServer.Spawn(bullet);
+
     }
 
     void EquipWeapon(Weapon weaponToEquip)
@@ -80,17 +115,17 @@ public class PlayerWeaponController : PlayerComponentController
 
 
     }
-    
+
     WeaponObject GetClosestWeaponObject()
     {
         //Get the closest weapon
         float shortestDistance = Mathf.Infinity;
         float currentDistance;
         WeaponObject closestWeaponObject = null;
-        for(int i = 0; i < weaponsInRange.Count; i++)
+        for (int i = 0; i < weaponsInRange.Count; i++)
         {
             currentDistance = Vector3.Distance(weaponsInRange[i].transform.position, transform.position);
-            if ( currentDistance < shortestDistance)
+            if (currentDistance < shortestDistance)
             {
                 shortestDistance = currentDistance;
                 closestWeaponObject = weaponsInRange[i];
@@ -98,41 +133,41 @@ public class PlayerWeaponController : PlayerComponentController
         }
         return closestWeaponObject;
     }
-    
+
     void PickupWeapon()
     {
         //Checks for button press
         if (CrossPlatformInputManager.GetButtonDown("Jump"))
         {
             //Checks if there is any weapon around
-            if(weaponsInRange.Count > 0)
+            if (weaponsInRange.Count > 0)
             {
                 //Gets the closest weapon
                 WeaponObject closestWeaponObject = GetClosestWeaponObject();
                 //Clones the weapon he has found
                 tempWeapon = closestWeaponObject.weaponReference.Clone();
-                
+
                 //If we dont have a weapon
                 if (currentWeapon == null)
                 {
                     //Update it to null
-                    //UpdateWeapon(closestWeaponObject.weaponReference.indexPosition, null);
+                    UpdateWeapon(closestWeaponObject.weaponReference.indexPosition, null);
                 }
                 else
                 {
                     //Update it to our current weapon
-                    //UpdateWeapon(closestWeaponObject.weaponReference.indexPosition, currentWeapon);
+                    UpdateWeapon(closestWeaponObject.weaponReference.indexPosition, currentWeapon);
                 }
-                
+
                 //Equips the cloned weapon
                 EquipWeapon(tempWeapon);
-                    
-                
-            
+
+
+
             }
         }
     }
-    
+
 
 
     void SwitchWeapon()
@@ -141,16 +176,16 @@ public class PlayerWeaponController : PlayerComponentController
         if (CrossPlatformInputManager.GetButtonDown("Jump"))
         {
             //Checks if there is any weapon around
-            if(weaponsInRange.Count > 0)
+            if (weaponsInRange.Count > 0)
             {
                 //Get the closest weapon
                 float shortestDistance = Mathf.Infinity;
                 float currentDistance;
                 WeaponObject closestWeapon = null;
-                for(int i = 0; i < weaponsInRange.Count; i++)
+                for (int i = 0; i < weaponsInRange.Count; i++)
                 {
                     currentDistance = Vector3.Distance(weaponsInRange[i].transform.position, transform.position);
-                    if ( currentDistance < shortestDistance)
+                    if (currentDistance < shortestDistance)
                     {
                         shortestDistance = currentDistance;
                         closestWeapon = weaponsInRange[i];
@@ -175,12 +210,12 @@ public class PlayerWeaponController : PlayerComponentController
                 else
                 {
                     //Update it to our current weapon
-                    UpdateWeapon(closestWeapon.weaponReference.indexPosition, ourWeapon);   
+                    UpdateWeapon(closestWeapon.weaponReference.indexPosition, ourWeapon);
                 }
 
                 //equip the weapon
                 EquipWeapon(theirWeapon);
-                
+
             }
             //UpdateWeapon(new Vector3(0, 2, 0), new Weapon(15, "anotherweapon", new Vector3(0, 2, 0)));
         }

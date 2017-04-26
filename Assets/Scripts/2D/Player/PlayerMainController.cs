@@ -10,15 +10,19 @@ public class PlayerMainController : PlayerComponentController
     WorldController worldController;
     public GameObject cameraPrefab;
 
-	// Use this for initialization
-	protected override void Start () {
 
-        if (!worldController) worldController = FindObjectOfType<WorldController>();;
+
+    // Use this for initialization
+    protected override void Start()
+    {
+        base.Start();
+        if (!isLocalPlayer) return;
+
+        if (!worldController) worldController = FindObjectOfType<WorldController>(); ;
 
         InstantiateCamera();
         SetTargetWorld();
-        
-	}
+}
 
     void InstantiateCamera()
     {
