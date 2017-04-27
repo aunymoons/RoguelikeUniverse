@@ -23,6 +23,13 @@ public class WeaponObject : NetworkedGameObject {
 		
 	}
 
+    public void UpdateValues(Sprite targetSprite, string targetName, Weapon targetWeapon)
+    {
+        UpdateSprite(targetSprite);
+        UpdateName(targetName);
+        UpdateWeaponReference(targetWeapon);
+    }
+
     public void UpdateSprite(Sprite targetSprite)
     {
         //Changes the sprite

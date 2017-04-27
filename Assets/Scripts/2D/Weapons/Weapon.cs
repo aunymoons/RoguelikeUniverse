@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Weapon {
     
-    public byte spriteType;
+    public byte weaponID, spriteType;
     public Vector3 indexPosition;
     public enum WeaponType { plasma = 0, nitrogen = 1, electricity = 2, acid = 3, water = 4 }
     public WeaponType weaponType;
@@ -27,10 +27,23 @@ public class Weapon {
         indexPosition = indexPos;
         weaponName = targetName;
     }
-    
+    public Weapon(byte id, byte spriteNum, string targetName, Vector3 indexPos = new Vector3(), WeaponObject weaponNetGameObject = null)
+    {
+        weaponID = id;
+        spriteType = spriteNum;
+        associatedWeapon = weaponNetGameObject;
+        indexPosition = indexPos;
+        weaponName = targetName;
+    }
+
     public Weapon Clone()
     {
-           return new Weapon(spriteType, weaponName, indexPosition, associatedWeapon);
+           return new Weapon(weaponID, spriteType, weaponName, indexPosition, associatedWeapon);
+    }
+
+    public Weapon Clone(Vector3 targetIndexPosition)
+    {
+        return new Weapon(weaponID, spriteType, weaponName, targetIndexPosition, associatedWeapon);
     }
     
 }

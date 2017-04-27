@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class Manager : MonoBehaviour {
+public class Manager : NetworkBehaviour {
 
     //Setup
     protected int squareResolution = 32;

@@ -95,10 +95,11 @@ public class TileManager : Manager
     {
         celAuto = new CellularAutomaton(WorldController.worldsize, WorldController.worldsize, Ruleset.majority, 0.5f, true);
         generate = true;
-        yield return new WaitForSeconds(1f);
+        //yield return new WaitForSeconds(1f);
         generate = false;
         StartCoroutine(GenerateWorld());
-        yield return new WaitForSeconds(1f);
+        //yield return new WaitForSeconds(1f);
+        yield return null;
     }
     
     IEnumerator GenerateWorld()
@@ -117,9 +118,9 @@ public class TileManager : Manager
                     tileArray[x, y, 0] = tileArray[x, y, 0] = new Tile(16, Tile.Property.solid, new Vector3(x, y, 0)); ;
                 }
             }
-            yield return delay;
+            //yield return delay;
         }
-
+        yield return null;
     }
 
 
