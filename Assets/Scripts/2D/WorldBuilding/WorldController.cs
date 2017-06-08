@@ -50,7 +50,7 @@ public class WorldController : MonoBehaviour
         targetPlayer = target;
     }
 
-    void GenerateVisibleWorld()
+    void GenerateVisibleWorld() //TODO THIS
     {
         for (int x = -poolRadius; x <= poolRadius; x++)
         {

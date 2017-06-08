@@ -67,7 +67,7 @@ public class TileManager : Manager
         //Collider
         if (currentSpawnTile.propertyType == Tile.Property.walkable)
         {
-            currentSpawnTileGameObject.GetComponent<BoxCollider2D>().enabled = false;
+            currentSpawnTileGameObject.GetComponent<BoxCollider2D>().enabled = false; //This can be encapsulated as a function inside the tile class
         }
         else
         {
